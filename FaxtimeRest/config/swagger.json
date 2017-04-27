@@ -50,6 +50,7 @@
                 ],
                 "parameters": [
                     { "$ref" : "#/parameters/agentParam" },
+                    { "$ref" : "#/parameters/senderParam" },
                     {
                         "name" : "datas",
                         "in" : "body",
@@ -333,6 +334,7 @@
                 ],
                 "parameters": [
                     { "$ref" : "#/parameters/agentParam" },
+                    { "$ref" : "#/parameters/senderParam" },
                     {
                         "name" : "datas",
                         "in" : "body",
@@ -487,7 +489,7 @@
                         "schema": {
                             "type": "object",
                             "items": {
-                                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA"
+                                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_PUT"
                             }
                         }
                     }
@@ -617,6 +619,7 @@
                 ],
                 "parameters": [
                     { "$ref" : "#/parameters/agentParam" },
+                    { "$ref" : "#/parameters/senderParam" },
                     {
                         "name" : "datas",
                         "in" : "body",
@@ -624,7 +627,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA"
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_META_POST"
                             }
                         }
                     }
@@ -662,7 +665,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA"
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_META_PUT"
                             }
                         }
                     }
@@ -700,7 +703,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA"
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA_DELETE"
                             }
                         }
                     }
@@ -771,7 +774,7 @@
                         "schema": {
                             "type": "object",
                             "items": {
-                                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA"
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_META_PUT"
                             }
                         }
                     }
@@ -818,45 +821,6 @@
                 }
             }
         },
-        "/v1/faxtime/fax/result": {
-            "get": {
-                "tags": [
-                    "/V1/FAXTIME/FAX/FC_FAX_RESULT"
-                ],
-                "operationId": "FAXTIME_FC_FAX_RESULT_GET",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    { "$ref" : "#/parameters/agentParam" },
-                    { "$ref" : "#/parameters/userParam" },
-                    { "$ref" : "#/parameters/pageParam" },
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "message identifier...",
-                        "required": false,
-                        "type": "string"
-                    }
-                ],
-                "description": "FAX 발송 결과 조회",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "items": {
-                                "$ref": "#/definitions/RESULTS"
-                            }
-                        }
-                    }
-                },
-                "deprecated": false 
-            }
-        },
         "/v1/alimtalk/send": {
             "get": {
                 "tags": [
@@ -901,6 +865,7 @@
                 ],
                 "parameters": [
                     { "$ref" : "#/parameters/agentParam" },
+                    { "$ref" : "#/parameters/senderParam" },
                     {
                         "name" : "datas",
                         "in" : "body",
@@ -908,7 +873,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA"
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_POST"
                             }
                         }
                     }
@@ -946,7 +911,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA"
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_PUT"
                             }
                         }
                     }
@@ -984,7 +949,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA"
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_DELETE"
                             }
                         }
                     }
@@ -1054,7 +1019,7 @@
                         "schema": {
                             "type": "object",
                             "items": {
-                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA"
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_PUT"
                             }
                         }
                     }
@@ -1104,9 +1069,9 @@
         "/v1/alimtalk/result": {
             "get": {
                 "tags": [
-                    "/V1/ALIMTALK/TBL_RESULT"
+                    "/V1/ALIMTALK/TBL_REQUEST_RESULT"
                 ],
-                "operationId": "ALIMTALK_TBL_RESULT_GET",
+                "operationId": "ALIMTALK_TBL_REQUEST_RESULT_GET",
                 "consumes": [
                     "application/json"
                 ],
@@ -1227,6 +1192,13 @@
             "required": false,
             "type": "string"
         },
+        "senderParam": {
+            "name": "user",
+            "in": "query",
+            "description": "user...",
+            "required": true,
+            "type": "string"
+        },
         "msgParam": {
             "name": "id",
             "in": "path",
@@ -1280,9 +1252,6 @@
         "FAXTIME_SDK_SMS_DATA_POST" : {
             "type" : "object",
             "properties" : {
-                "user" : {
-                    "type" : "string"
-                },
                 "chkReserve" : {
                     "type" : "string"
                 },
@@ -1349,51 +1318,9 @@
                 }
             }
         },
-        "FAXTIME_SDK_SMS_DATA" : {
-            "type" : "object",
-            "properties" : {
-                "id" : {
-                    "type" : "integer"
-                    , "format" : "int64"
-                },
-                "ntblusersid" : {
-                    "type" : "string"
-                },
-                "chkReserve" : {
-                    "type" : "string"
-                },
-                "sTitle": {
-                    "type" : "string"
-                },
-                "vmessage" : {
-                    "type" : "string"
-                },
-                "revDttm" : {
-                    "type" : "string"
-                },
-                "vsourcetel" : {
-                    "type" : "string"
-                },
-                "vreceiver" : {
-                    "type" : "string"
-                },
-                "vdestinationtel" : {
-                    "type" : "string"
-                },
-                "headerSeq" : {
-                    "type" : "string"
-                },
-                "msgRate" : {
-                    "type" : "string"
-                }
-            }
-        },
         "FAXTIME_SDK_MMS_DATA_POST" : {
             "type" : "object",
             "properties" : {
-                "user" : {
-                    "type" : "string"
-                },
                 "chkReserve" : {
                     "type" : "string"
                 },
@@ -1474,62 +1401,13 @@
                 }
             }
         },
-                "FAXTIME_SDK_MMS_DATA" : {
+        "FAXTIME_FC_FAX_META_POST" : {
             "type" : "object",
             "properties" : {
-                "id" : {
-                    "type" : "integer"
-                    , "format" : "int64"
-                },
-                "ntblusersid" : {
-                    "type" : "string"
-                },
                 "chkReserve" : {
-                    "type" : "string"
-                },
-                "sTitle": {
-                    "type" : "string"
-                },
-                "vmessage" : {
                     "type" : "string"
                 },
                 "revDttm" : {
-                    "type" : "string"
-                },
-                "vsourcetel" : {
-                    "type" : "string"
-                },
-                "vreceiver" : {
-                    "type" : "string"
-                },
-                "vdestinationtel" : {
-                    "type" : "string"
-                },
-                "file_cnt" : {
-                    "type" : "string"
-                },
-                "file_path" : {
-                    "type" : "string"
-                },
-                "headerSeq" : {
-                    "type" : "string"
-                },
-                "msgRate" : {
-                    "type" : "string"
-                }
-            }
-        },
-        "FAXTIME_FC_FAX_DATA" : {
-            "type" : "object",
-            "properties" : {
-                "id" : {
-                    "type" : "integer"
-                    , "format" : "int32"
-                },
-                "ntblusersid" : {
-                    "type" : "string"
-                },
-                "chkReserve" : {
                     "type" : "string"
                 },
                 "sTitle": {
@@ -1538,9 +1416,6 @@
                 "msgCnt" : {
                     "type" : "integer"
                     , "format" : "int32"
-                },
-                "userid" : {
-                    "type" : "string"
                 },
                 "senderPh" : {
                     "type" : "string"
@@ -1554,10 +1429,10 @@
                 "fFilePageCnt" : {
                     "type" : "string"
                 },
-                "msgAmt" : {
+                "chkResultSms" : {
                     "type" : "string"
                 },
-                "chkResultSms" : {
+                "vsourcetel" : {
                     "type" : "string"
                 },
                 "chkResultEmail" : {
@@ -1566,21 +1441,107 @@
                 "vemail" : {
                     "type" : "string"
                 },
-                "vsourcetel" : {
-                    "type" : "string"
-                },
-                "sendingMassId" : {
+                "sendingmass" : {
                     "type" : "integer"
                     , "format" : "int32"
+                },
+                "target" : {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/FAXTIME_FC_FAX_MSG_POST"
+                    }
                 }
             }
         },
-        "ALIMTALK_TBL_REQUEST_DATA" : {
+        "FAXTIME_FC_FAX_MSG_POST" : {
+            "type" : "object",
+            "properties" : {
+                "sRName" : {
+                    "type" : "string"
+                },
+                "sFaxNo" : {
+                    "type" : "string"
+                },
+                "chkResultSms" : {
+                    "type" : "string"
+                }
+            }
+        },
+        "FAXTIME_FC_FAX_META_PUT" : {
             "type" : "object",
             "properties" : {
                 "id" : {
+                    "type" : "integer"
+                    , "format" : "int64"
+                },
+                "user" : {
                     "type" : "string"
                 },
+                "chkReserve" : {
+                    "type" : "string"
+                },
+                "revDttm" : {
+                    "type" : "string"
+                },
+                "sTitle": {
+                    "type" : "string"
+                },
+                "senderPh" : {
+                    "type" : "string"
+                },
+                "chkResultSms" : {
+                    "type" : "string"
+                },
+                "vsourcetel" : {
+                    "type" : "string"
+                },
+                "chkResultEmail" : {
+                    "type" : "string"
+                },
+                "vemail" : {
+                    "type" : "string"
+                },
+                "target" : {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/FAXTIME_FC_FAX_MSG_PUT"
+                    }
+                }
+            }
+        },
+        "FAXTIME_FC_FAX_MSG_PUT" : {
+            "type" : "object",
+            "properties" : {
+                "serialNo" : {
+                    "type" : "integer"
+                    , "format" : "int64"
+                },
+                "sRName" : {
+                    "type" : "string"
+                },
+                "sFaxNo" : {
+                    "type" : "string"
+                },
+                "chkResultSms" : {
+                    "type" : "string"
+                }
+            }
+        },
+        "FAXTIME_FC_FAX_DATA_DELETE" : {
+            "type" : "object",
+            "properties" : {
+                "id" : {
+                    "type" : "integer"
+                    , "format" : "int64"
+                },
+                "user" : {
+                    "type" : "string"
+                }
+            }
+        },
+        "ALIMTALK_TBL_REQUEST_DATA_POST" : {
+            "type" : "object",
+            "properties" : {
                 "message_type" : {
                     "type" : "string"
                 },
@@ -1611,10 +1572,54 @@
                 "revDttm" : {
                     "type" : "string"
                 },
-                "reg_dt" : {
+                "remark1" : {
+                    "type" : "string"
+                }
+            }
+        },
+        "ALIMTALK_TBL_REQUEST_DATA_PUT" : {
+            "type" : "object",
+            "properties" : {
+                "id" : {
+                    "type" : "string"
+                },
+                "phn" : {
+                    "type" : "string"
+                },
+                "msg": {
+                    "type" : "string"
+                },
+                "chkReserve" : {
+                    "type" : "string"
+                },
+                "chkBudal" : {
+                    "type" : "string"
+                },
+                "msgCont01" : {
+                    "type" : "string"
+                },
+                "selReplyNum01" : {
+                    "type" : "string"
+                },
+                "tmpl_id" : {
+                    "type" : "string"
+                },
+                "revDttm" : {
                     "type" : "string"
                 },
                 "remark1" : {
+                    "type" : "string"
+                }
+            }
+        },
+        "ALIMTALK_TBL_REQUEST_DATA_DELETE" : {
+            "type" : "object",
+            "properties" : {
+                "id" : {
+                    "type" : "integer"
+                    , "format" : "int64"
+                },
+                "user" : {
                     "type" : "string"
                 }
             }

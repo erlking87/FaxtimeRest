@@ -27,7 +27,7 @@ module.exports = {
             + "           , COUNT(*) OVER() TOTAL_COUNT \n"            
             + "  FROM SDK_SMS_SEND \n"
             + " WHERE USER_ID in ( \n"
-            + "     SELECT CAST(NSID AS VARCHAR)  \n"
+            + "     SELECT NSID  \n"
             + "	      FROM TBL_RESTAPI_USER \n"
             + "	     WHERE AGENTID = '" + args["agentKey"] + "' \n";
         if(null != args["user"]) {
@@ -73,9 +73,23 @@ module.exports = {
             });
         }
         
+        var sqlBalance = "WITH AMT AS (";
         var sqlText = [];
         var agentKey = req.get("Agent-Key") || "";
+        var user = req.query["user"];
         var idx = 0; while(idx < req.body.length) {
+            if(0 != idx) sqlBalance = sqlBalance + "UNION ALL ";
+            sqlBalance = sqlBalance
+                + "SELECT (select isnull(( \n"
+                + "           select isnull(nrate,0) \n"
+                + "             from tblinternalrate tir, tbluser tu \n"
+                + "            where tir.vclass = tu.vsmsclass \n"
+                + "              and tir.ckind = 'S' \n"
+                + "              and tu.nsid = A.NSID \n"
+                + "           ),0)) AMTp \n"
+                + "  FROM TBL_RESTAPI_USER A \n"
+                + " WHERE A.AGENTID = '" + agentKey + "' \n"
+                + "   AND A.VUSERID = '" + user +"' \n";
             sqlText.push(
                 "  INSERT INTO SDK_SMS_SEND ( \n"
                 + "  MSG_ID, USER_ID, SCHEDULE_TYPE, \n"
@@ -103,11 +117,71 @@ module.exports = {
                 + "       , 'F' \n"
                 + "  FROM TBL_RESTAPI_USER A \n"
                 + " WHERE A.AGENTID = '" + agentKey + "' \n"
-                + "   AND A.VUSERID='" + req.body[idx]["user"] +"';"
+                + "   AND A.VUSERID='" + user +"';"
+            );
+            
+            //sqlText.push(""// 사용자테이블에 금액차감);
+            sqlText.push(
+                "  UPDATE A SET \n"
+                + "       A.NBALANCE = (A.NBALANCE - (select isnull(( \n"
+                + "          select isnull(nrate,0) \n"
+                + "             from tblinternalrate tir, tbluser tu \n"
+                + "            where tir.vclass = tu.vsmsclass \n"
+                + "              and tir.ckind = 'S' \n"
+                + "              and tu.nsid = A.NSID \n"
+                + "           ),0))) \n"
+                + "  FROM TBLUSER A \n"
+                + " INNER JOIN TBL_RESTAPI_USER AS B \n"
+                + "    ON A.NSID=B.NSID \n"
+                + " WHERE B.AGENTID = '" + agentKey + "' \n"
+                + "   AND A.VUSERID='" + user +"';"
             );
             ++idx
         }
-        return dbHelper.sqlExecute(sqlText, res);
+        
+        sqlBalance = sqlBalance 
+                + ") \n"
+                + "SELECT CASE WHEN 0 > (B.NBALANCE - (SELECT SUM(AMTp) FROM AMT)) THEN 'F' ELSE 'T' END CAN\n"
+                + "  FROM TBL_RESTAPI_USER A \n"
+                + "       ,TBLUSER B \n"
+                + " WHERE A.AGENTID = '" + agentKey + "' \n"
+                + "   AND A.VUSERID='" + user +"' \n"
+                + "   AND A.NSID=B.NSID \n"
+                + "   AND B.CPREPAID='T' \n";
+                
+        const pool = new sql.ConnectionPool(dbConfig, err => {
+            const request = pool.request();
+            dbHelper.sqlLogWriter(sqlBalance);
+            request.query(sqlBalance, (err, result) => {
+                if(typeof err !== 'undefined' && null != err) {
+                    return res.send({
+                        "status" : "500",
+                        "description" : "내부 서버 오류"
+                    });
+                }
+                try {
+                    var target = (typeof result === "undefined" || null == result
+                        || typeof result.recordsets == 'undefined' || null == result.recordsets
+                        || 1 > result.recordsets.length) ? null : result.recordset[0];
+                    if(typeof target !== "undefined" && (null != target) && ("F" == target["CAN"])) {
+                        return res.send({
+                            "status" : "402",
+                            "description" : "결제 필요"
+                        });
+                    }
+                    return dbHelper.sqlExecute(sqlText, res);
+                }
+                catch (exception) {
+                	  console.log(exception);
+                }
+            });
+        });
+        pool.on('error', err => {
+            return res.send({
+                "status" : "500",
+                "description" : "내부 서버 오류"
+            });
+        });
     },
     updateSendMsg: function (req, res, id) {
 
@@ -181,6 +255,14 @@ module.exports = {
         // id가 있으면 본문은 단건에 대한 오브젝트이다.
         if(typeof id !== 'undefined' && null != id) {
             sqlText.push(
+                "  UPDATE A SET \n"
+                + "       A.NBALANCE=(A.NBALANCE + B.RESERVED8) \n"
+                + "  FROM TBLUSER A \n"
+                + " INNER JOIN SDK_SMS_SEND B \n"
+                + "    ON A.NSID=B.USER_ID \n"
+                + " WHERE B.MSG_ID=" + id
+            );
+            sqlText.push(
                 "  DELETE A \n"
                 + "  FROM SDK_SMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
@@ -191,6 +273,14 @@ module.exports = {
             );
         } else {
             var idx = 0; while(idx < req.body.length) {
+                sqlText.push(
+                "  UPDATE A SET \n"
+                + "       A.NBALANCE=(A.NBALANCE + B.RESERVED8) \n"
+                + "  FROM TBLUSER A \n"
+                + " INNER JOIN SDK_SMS_SEND B \n"
+                + "    ON A.NSID=B.USER_ID \n"
+                + " WHERE B.MSG_ID=" + req.body[idx]["id"]
+                );
                 sqlText.push(
                 "  DELETE A \n"
                 + "  FROM SDK_SMS_SEND AS A \n"
@@ -300,8 +390,9 @@ module.exports = {
                     done();
                     return;
                 } else {
+                    var row = null;
                     try {
-                        var row = (datas instanceof Array) ? datas[i] : datas;
+                        row = (datas instanceof Array) ? datas[i] : datas;
                     }catch (exception) {
                         nextItem(i + 1);
                         return;
