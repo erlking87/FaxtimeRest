@@ -6,6 +6,8 @@ var dbConfig = {
     password: 'test2016!',
     server: 'faxtimedb.database.windows.net',
     database: 'faxtime01',
+    connectionTimeout: 300000,
+    requestTimeout: 300000,
     options: {
         encrypt: true
     }
