@@ -43,6 +43,8 @@
     <Compile Include="data\v1\faxtime\sms\result.js" />
     <Compile Include="data\v1\faxtime\sms\send.js" />
     <Compile Include="data\v1\faxtime\sms\send\{id}.js" />
+    <Compile Include="handlers\v1\alimtalk\reserve_send.js" />
+    <Compile Include="handlers\v1\alimtalk\reserve_send\{id}.js" />
     <Compile Include="handlers\v1\alimtalk\send.js" />
     <Compile Include="handlers\v1\alimtalk\send\{id}.js" />
     <Compile Include="handlers\v1\faxtime\fax\result.js" />
@@ -90,6 +92,7 @@
     <Folder Include="handlers\" />
     <Folder Include="handlers\v1\" />
     <Folder Include="handlers\v1\alimtalk\" />
+    <Folder Include="handlers\v1\alimtalk\reserve_send\" />
     <Folder Include="handlers\v1\alimtalk\send\" />
     <Folder Include="handlers\v1\faxtime\" />
     <Folder Include="handlers\v1\faxtime\fax\" />
