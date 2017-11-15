@@ -1604,7 +1604,7 @@
                 "revDttm" : {
                     "type" : "string"
                 },
-                "orgMsgId" : {
+                "orgMsgId" : { 
                     "type" : "string"
                 },
                 "remark1" : {
