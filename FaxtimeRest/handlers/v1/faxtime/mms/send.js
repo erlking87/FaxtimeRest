@@ -7,6 +7,8 @@
          repository.selectSendMsg(req, res);
      },
      post: function FAXTIME_SDK_MMS_SEND_POST(req, res) {
+		 req.connection.setTimeout(600000000000000000000000000000000);
+		 res.connection.setTimeout(600000000000000000000000000000000);
          repository.createSendMsg(req, res);
      },
      put: function FAXTIME_SDK_MMS_SEND_PUT(req, res) {

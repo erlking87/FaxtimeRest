@@ -81,9 +81,11 @@ module.exports = {
         var sqlText = [];
         var agentKey = req.get("Agent-Key") || "";
         var user = req.query["user"];
+        console.log("req.body.length -> " + req.body.length);
         var idx = 0; while(idx < req.body.length) {
-            if(0 != idx) sqlBalance = sqlBalance + "UNION ALL ";
-            sqlBalance = sqlBalance
+            //if(0 != idx) sqlBalance = sqlBalance + "UNION ALL ";
+            //sqlBalance = sqlBalance
+            sqlBalance = "WITH AMT AS ("
                 + "SELECT (select isnull(( \n"
                 + "           select isnull(nrate,0) \n"
                 + "             from tblinternalrate tir, tbluser tu \n"
@@ -159,11 +161,13 @@ module.exports = {
         const pool = new sql.ConnectionPool(dbConfig, err => {
             const request = pool.request();
             dbHelper.sqlLogWriter(sqlBalance);
+       	    console.log("sqlBalance -> " + sqlBalance);
             request.query(sqlBalance, (err, result) => {
                 if(typeof err !== 'undefined' && null != err) {
+               	    console.log("내부 서버 오류111 -> " + err);
                     return res.send({
                         "status" : "500",
-                        "description" : "내부 서버 오류"
+                        "description" : "내부 서버 오류111"
                     });
                 }
                 try {
@@ -184,9 +188,10 @@ module.exports = {
             });
         });
         pool.on('error', err => {
+            console.log("내부 서버 오류222 -> " + err);
             return res.send({
                 "status" : "500",
-                "description" : "내부 서버 오류"
+                "description" : "내부 서버 오류222"
             });
         });
     },

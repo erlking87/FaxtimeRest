@@ -35,17 +35,17 @@ exports.sqlDecode = function (id, object, defaultValue) {
 }*/
 
 exports.sqlSelectParameters = function(req) {
-    var
-        result = {}
-        , findObject = function (id, object, defaultValue) {
-            if(typeof id === "undefined" || null == id
-                || typeof object === "undefined" || null == object
-            ) return (typeof defaultValue === "undefined") ? "" : defaultValue;
-            if(typeof object[id] === "undefined" || null == object[id]
-            ) return (typeof defaultValue === "undefined") ? "" : defaultValue;
-            return object[id];
-        };
-
+    var 
+    result = {}
+    , findObject = function (id, object, defaultValue) {
+        if(typeof id === "undefined" || null == id
+            || typeof object === "undefined" || null == object
+        ) return (typeof defaultValue === "undefined") ? "" : defaultValue;
+        if(typeof object[id] === "undefined" || null == object[id]
+        ) return (typeof defaultValue === "undefined") ? "" : defaultValue;
+        return object[id];
+    };
+    
     result["agentKey"] = req.get("Agent-Key") || "";
     result["user"] = findObject("user", req.query, null);
     result["pageSize"] = 10;
@@ -67,68 +67,68 @@ exports.sqlNewSelect = function (sqlText, res, id, callback) {
     LogWriter(sqlText);
     console.log("QUERY -> " + sqlText);
 
-    objAsync.waterfall([
-        function (callback) {
-            console.log("DB Connection Start ....");
-            //var gggg = dbHelper.sqlNewSelect(sqlSelText, res);
-            //TODO 여기에서 시퀀스만 받음 되는데...
-            const pool = new sql.ConnectionPool(dbConfig, err => {
-                pool.request().query(sqlText, (err, result) => {
-                    // 에러인 경우 빈객체로 리턴한다.
-                    if (typeof err !== 'undefined' && null != err) {
-                        console.log("ERROR@@@ -> " + err);
-                        return;
-                    }
-                    var val = {};
-                    val["status"] = (0 == result.rowsAffected[0]) ? "204" : "200";
-                    val["description"] = (0 == result.rowsAffected[0]) ? "콘텐츠 없음" : "성공";
-                    val["affected"] = result.rowsAffected[0];
-                    if (typeof id !== 'undefined' && null != id) {
-                        // 결과가 없을때 에러난다.
-                        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
+	objAsync.waterfall([
+		function (callback) {
+		    console.log("DB Connection Start ....");
+	    	//var gggg = dbHelper.sqlNewSelect(sqlSelText, res);
+	    	//TODO 여기에서 시퀀스만 받음 되는데...
+		    const pool = new sql.ConnectionPool(dbConfig, err => {
+	        	pool.request().query(sqlText, (err, result) => {
+	        	    // 에러인 경우 빈객체로 리턴한다.
+	        	    if (typeof err !== 'undefined' && null != err) {
+					    console.log("ERROR@@@ -> " + err);
+	        	        return;
+	        	    }
+	        	    var val = {};
+	        	    val["status"] = (0 == result.rowsAffected[0]) ? "204" : "200";
+	        	    val["description"] = (0 == result.rowsAffected[0]) ? "콘텐츠 없음" : "성공";
+	        	    val["affected"] = result.rowsAffected[0];
+	        	    if (typeof id !== 'undefined' && null != id) {
+	        	        // 결과가 없을때 에러난다.
+	        	        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
+	        	        
+	        	    } else {
+	        	        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
+	        	    }
+				    console.log("Sequence Cpmplete !!!!!" + JSON.stringify(result.recordset[0]));
+	        	    return 123456789;
+				});
+			    console.log("DB Connection OK !!!");
+		    });
+		    pool.on('error', err => {
+			    console.log("DB Connect ERROR");
+		        return;
+		    });
+	        //pool.request().query(sqlText, (err, result) => {
+	        //    // 에러인 경우 빈객체로 리턴한다.
+	        //    if(typeof err !== 'undefined' && null != err) {
+	        //        return res.send({
+	        //                "status" : "500",
+	        //                "description" : "내부 서버 오류"
+	        //        });
+	        //    }
+	        //    var val = {};
+	        //    val["status"] = (0 == result.rowsAffected[0]) ? "204" : "200";
+	        //    val["description"] = (0 == result.rowsAffected[0]) ? "콘텐츠 없음" : "성공";
+	        //    val["affected"] = result.rowsAffected[0];
+	        //    if(typeof id !== 'undefined' && null != id) {
+	        //        // 결과가 없을때 에러난다.
+	        //        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
+	        //        
+	        //    } else {
+	        //        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
+	        //    }
+			//    console.log("Sequence Cpmplete !!!!!");
+	        //    return 123456789;
+	        //    //callback(123456789);
+	        //});
+		    console.log("DB Connect Complete");
 
-                    } else {
-                        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
-                    }
-                    console.log("Sequence Cpmplete !!!!!" + JSON.stringify(result.recordset[0]));
-                    return 123456789;
-                });
-                console.log("DB Connection OK !!!");
-            });
-            pool.on('error', err => {
-                console.log("DB Connect ERROR");
-                return;
-            });
-            //pool.request().query(sqlText, (err, result) => {
-            //    // 에러인 경우 빈객체로 리턴한다.
-            //    if(typeof err !== 'undefined' && null != err) {
-            //        return res.send({
-            //                "status" : "500",
-            //                "description" : "내부 서버 오류"
-            //        });
-            //    }
-            //    var val = {};
-            //    val["status"] = (0 == result.rowsAffected[0]) ? "204" : "200";
-            //    val["description"] = (0 == result.rowsAffected[0]) ? "콘텐츠 없음" : "성공";
-            //    val["affected"] = result.rowsAffected[0];
-            //    if(typeof id !== 'undefined' && null != id) {
-            //        // 결과가 없을때 에러난다.
-            //        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
-            //        
-            //    } else {
-            //        val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
-            //    }
-            //    console.log("Sequence Cpmplete !!!!!");
-            //    return 123456789;
-            //    //callback(123456789);
-            //});
-            console.log("DB Connect Complete");
 
-
-            callback(null, callback);
-        }
-    ], function (err, result) { console.log("seq end ===> " + err); }
-    );
+	    	callback(null, callback);
+		}
+	], function (err, result) { console.log("seq end ===> " + err); }
+	);
 };
 
 exports.sqlSelect = function (sqlText, res, id) {
@@ -137,31 +137,31 @@ exports.sqlSelect = function (sqlText, res, id) {
 
     const pool = new sql.ConnectionPool(dbConfig, err => {
         pool.request()
-            .query(sqlText, (err, result) => {
-                // 에러인 경우 빈객체로 리턴한다.
-                if(typeof err !== 'undefined' && null != err) {
-                    console.log(err);
-                    return res.send({
+        .query(sqlText, (err, result) => {
+            // 에러인 경우 빈객체로 리턴한다.
+            if(typeof err !== 'undefined' && null != err) {
+		    	console.log(err);
+                return res.send({
                         "status" : "500",
                         "description" : "내부 서버 오류"
-                    });
-                }
-                var val = {};
-                val["status"] = (0 == result.rowsAffected[0]) ? "204" : "200";
-                val["description"] = (0 == result.rowsAffected[0]) ? "콘텐츠 없음" : "성공";
-                val["affected"] = result.rowsAffected[0];
-                if(typeof id !== 'undefined' && null != id) {
-                    // 결과가 없을때 에러난다.
-                    val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
-
-                } else {
-                    val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
-                }
-                return res.send(val);
-            });
+                });
+            }
+            var val = {};
+            val["status"] = (0 == result.rowsAffected[0]) ? "204" : "200";
+            val["description"] = (0 == result.rowsAffected[0]) ? "콘텐츠 없음" : "성공";
+            val["affected"] = result.rowsAffected[0];
+            if(typeof id !== 'undefined' && null != id) {
+                // 결과가 없을때 에러난다.
+                val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
+                
+            } else {
+                val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
+            }
+            return res.send(val);
+        });
     });
     pool.on('error', err => {
-        console.log(err);
+    	console.log(err);
         return res.send({
             "status": "500",
             "description": "내부 서버 오류"
@@ -207,7 +207,7 @@ exports.sqlExecute = function (sqlText, seqNo, res) {
                     LogWriter(sqlText[i]);
                     request.query(sqlText[i], (err, result) => {
                         if (typeof err !== 'undefined' && null != err) {
-                            //console.log("Insert Query err -> " + err);
+                    		//console.log("Insert Query err -> " + err);
                             transaction.rollback(err => {
                                 return res.send({
                                     "status": "500",
@@ -224,7 +224,7 @@ exports.sqlExecute = function (sqlText, seqNo, res) {
             nextItem(0);
         });
     });
-
+    
     pool.on('error', err => {
         return res.send({
             "status" : "500",
@@ -271,7 +271,7 @@ exports.sqlUpdate = function (sqlText, res) {
                     LogWriter(sqlText[i]);
                     request.query(sqlText[i], (err, result) => {
                         if(typeof err !== 'undefined' && null != err) {
-                            //console.log("Insert Query err -> " + err);
+                    		//console.log("Insert Query err -> " + err);
                             transaction.rollback(err => {
                                 return res.send({
                                     "status" : "500",
@@ -288,7 +288,7 @@ exports.sqlUpdate = function (sqlText, res) {
             nextItem(0);
         });
     });
-
+    
     pool.on('error', err => {
         return res.send({
             "status" : "500",
@@ -317,29 +317,29 @@ exports.sqlNewSelect1 = function (sqlText) {
             if (typeof id !== 'undefined' && null != id) {
                 // 결과가 없을때 에러난다.
                 val["datas"] = (0 < result.rowsAffected[0]) ? result.recordset[0] : null;
-
+                
             } else {
                 val["datas"] = (0 < result.rowsAffected[0]) ? result.recordsets[0] : [];
             }
             //return val;
             if (err) {
-                val["status111"] = "ERROR";
-                //return "ERROR";
-                return JSON.stringify(val);
+		    	val["status111"] = "ERROR";
+        		//return "ERROR";
+	    		return JSON.stringify(val);
                 // 결과가 없을때 에러난다.
-
+                
             } else {
-                val["status111"] = "OK";
-                //return "ERROR";
-                return JSON.stringify(val);
+		    	val["status111"] = "OK";
+        		//return "ERROR";
+	    		return JSON.stringify(val);
             }
-            return JSON.stringify(val);
+		    return JSON.stringify(val);
         });
     });
     pool.on('err', err => {
-        val["status111"] = "ERROR####";
+    	val["status111"] = "ERROR####";
         //return "ERROR";
-        return JSON.stringify(val);
+	    return JSON.stringify(val);
     });
 
     return JSON.stringify(val);

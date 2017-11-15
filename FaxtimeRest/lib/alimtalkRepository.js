@@ -1,34 +1,157 @@
 'use strict';
 
 var dbHelper = require('./dbHelper');
+var async = require('async');
+
+var result = "";
 
 // 쿼리에 널처리 한다.
 module.exports = {
     // 스웨거 스팩상 라우터에서 패스 파라미터는 단일항목만 지원함
     selectSendMsg: function (req, res, id) {
+        var args = dbHelper.sqlSelectParameters(req);
+        console.log(args["msgid"]);
+        var currentPage = 1;
+        //msgid가 들어오면 단건조회 -> 페이지는 뭐가 들어와도 1
+	    if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
+			currentPage = 1;
+		} else {
+			currentPage = args["currentPage"];
+		}
+
         // 쿼리
         var sqlText = 
-            "  SELECT A.msgid id "
-            + "       , A.message_type message_type"
-            + "       , A.phn phn "
-            + "       , A.msg msg "
-            + "       , A.msg_sms msgCont01 "
-            + "       , A.sms_sender selReplyNum01 "
-            + "       , A.tmpl_id tmpl_id "
-            + "       , (SELECT YELLOWID FROM TBLYELLOWID WHERE profile = A.profile) selYellowId01 "
-            + "       , A.reserve_dt revDttm "
-            + "       , A.reg_dt reg_dt "
-            + "       , A.remark1 remark1 "
-            + "  FROM TBL_REQUEST A ";
-        if(typeof id !== 'undefined' && null != id) {
-            sqlText = sqlText
-            + " WHERE A.msgid='" + id +"'";
-        }
-        
+			  " select tbz.* "
+			+ " from  ( "
+			+ "        select tby.* "
+			+ "        from  ( "
+			+ "               select row_number() over(order by tbx.reg_dt desc) as seq "
+			+ "                    , count('1') over(partition by '1') as totcnt "
+			+ "                    , ceiling(row_number() over(order by tbx.reg_dt desc) / convert(numeric, '" + args["pageSize"] + "' ) ) pageidx "
+			+ "                    , tbx.* "
+			+ "               from  ( "
+			+ "                      select * "
+			+ "                      from  ( "
+			+ "                             select msgid "
+			+ "                                  , (select nsid from tbl_altalk_template a "
+			+ "                                     where  a.tepl_id = msg.tmpl_id and a.profile = msg.profile) as tmpl_nsid "
+			+ "                                  , message_type "
+			+ "                                  , code "
+			+ "                                  , case when substring(phn,1,2) = '82' then '0' + substring(phn,3,len(phn)-1) else phn end as phn "
+			+ "                                  , msg "
+			+ "                                  , msg_sms "
+			+ "                                  , sms_sender "
+			+ "                                  , sms_kind "
+			+ "                                  , tmpl_id "
+			+ "                                  , profile "
+			+ "                                  , convert(varchar(16), reg_dt, 120) as reg_dt "
+			+ "                                  , result "
+			+ "                                  , (select yellowid from tblyellowid a where a.profile = msg.profile) as yellowid "
+			+ "                                  , (select tepl_name from tbl_altalk_template a where a.tepl_id = msg.tmpl_id and a.profile = msg.profile) as tepl_name "
+			+ "                                  , datalength(msg_sms) as msg_smsdatalength "
+			+ "                                  , datalength(msg) as msgdatalength "
+			+ "                             from  ( "
+			+ "                                    select msgid,message_type,phn,msg,msg_sms,sms_sender,sms_kind,tmpl_id,profile,reg_dt,'S' as result, 'C' as code "
+			+ "                                    from   tbl_request "
+			+ "                                    where  convert(varchar(10),reg_dt,120)  between '" + args["fdate"] + "' and '" + args["tdate"] + "' "
+			+ "                                    and    profile in (select profile from tblyellowid where ntblusersid = " + args["ntblusersid"] + " and status='02') ";
+	                                               if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
+			sqlText = sqlText + "                      and    msgid = '" + args["msgid"] + "'";
+			                                       }
+			sqlText = sqlText + ""
+			+ "                                    union all "
+			+ "                                    select msgid,message_type,phn,msg,msg_sms,sms_sender,sms_kind,tmpl_id,profile,reg_dt,result,code "
+			+ "                                    from   tbl_request_result "
+			+ "                                    where  convert(varchar(10),reg_dt,120)  between '" + args["fdate"] + "' and '" + args["tdate"] + "' "
+			+ "                                    and    profile in (select profile from tblyellowid where ntblusersid = " + args["ntblusersid"] + " and status='02') ";
+	                                               if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
+			sqlText = sqlText + "                      and    msgid = '" + args["msgid"] + "'";
+			                                       }
+			sqlText = sqlText + ""
+			+ "                                   ) msg "
+			+ "                            ) m "
+			+ "                      where  1 = 1 "
+			+ "                      and    message_type = '" + args["message_type"] + "' "
+			+ "                     ) tbx "
+			+ "              ) tby "
+			+ "       ) tbz "
+			+ " where   pageidx = " + currentPage
+			+ " order   by seq asc ";
+        console.log(sqlText);
+        return dbHelper.sqlSelect(sqlText, res, id);
+    },
+    // 스웨거 스팩상 라우터에서 패스 파라미터는 단일항목만 지원함
+    selectReserveSendMsg: function (req, res, id) {
+        var args = dbHelper.sqlSelectParameters(req);
+        console.log("user id -> " + args["user"]);
+        console.log("msg id -> " + args["msgid"]);
+        var currentPage = 1;
+        //msgid가 들어오면 단건조회 -> 페이지는 뭐가 들어와도 1
+	    if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
+			currentPage = 1;
+		} else {
+			currentPage = args["currentPage"];
+		}
+
+        // 쿼리
+        var sqlText = 
+			  " select tbz.* "
+			+ " from  ( "
+			+ "        select tby.* "
+			+ "        from  ( "
+			+ "               select row_number() over(order by tbx.reg_dt desc) as seq "
+			+ "                    , count('1') over(partition by '1') as totcnt "
+			+ "                    , ceiling(row_number() over(order by tbx.reg_dt desc) / convert(numeric, '" + args["pageSize"] + "' ) ) pageidx "
+			+ "                    , tbx.* "
+			+ "               from  ( "
+			+ "                      select * "
+			+ "                      from  ( "
+			+ "                             select msgid "
+			+ "                                  , (select nsid from tbl_altalk_template a "
+			+ "                                     where  a.tepl_id = msg.tmpl_id and a.profile = msg.profile) as tmpl_nsid "
+			+ "                                  , message_type "
+			+ "                                  , code "
+			+ "                                  , case when substring(phn,1,2) = '82' then '0' + substring(phn,3,len(phn)-1) else phn end as phn "
+			+ "                                  , msg "
+			+ "                                  , msg_sms "
+			+ "                                  , sms_sender "
+			+ "                                  , sms_kind "
+			+ "                                  , tmpl_id "
+			+ "                                  , profile "
+			+ "                                  , convert(varchar(16), reg_dt, 120) as reg_dt "
+			+ "                                  , result "
+			+ "                                  , (select yellowid from tblyellowid a where a.profile = msg.profile) as yellowid "
+			+ "                                  , (select tepl_name from tbl_altalk_template a where a.tepl_id = msg.tmpl_id and a.profile = msg.profile) as tepl_name "
+			+ "                                  , datalength(msg_sms) as msg_smsdatalength "
+			+ "                                  , datalength(msg) as msgdatalength "
+			+ "                             from  ( "
+			+ "                                    select msgid,message_type,phn,msg,msg_sms,sms_sender,sms_kind,tmpl_id,profile,reg_dt,'s' as result, 'c' as code "
+			+ "                                    from   tbl_request "
+			+ "                                    where  convert(varchar(10),reserve_dt,120)  between '" + args["fdate"] + "' and '" + args["tdate"] + "' "
+			+ "                                    and    profile in (select profile from tblyellowid where ntblusersid = " + args["ntblusersid"] + " and status='02') ";
+	                                               if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
+			sqlText = sqlText + "                      and    msgid = '" + args["msgid"] + "'";
+			                                       }
+			sqlText = sqlText + ""
+			+ "                                   ) msg "
+			+ "                            ) m "
+			+ "                      where  1 = 1 "
+			+ "                      and    message_type = '" + args["message_type"] + "' "
+			+ "                     ) tbx "
+			+ "              ) tby "
+			+ "       ) tbz "
+			+ " where   pageidx = " + currentPage
+			+ " order   by seq asc ";
+        console.log(sqlText);
         return dbHelper.sqlSelect(sqlText, res, id);
     },
     createSendMsg: function (req, res) {
       
+		console.log("***************************************");
+        var args = dbHelper.sqlSelectParameters(req);
+        console.log("user id -> " + args["user"]);
+        console.log("agent key -> " + args["agentKey"]);
+
         // id 즉 패스 파라미터 형식은 지원하지 않는다.
         // 전문본문에 데이터가 없다면 잘못된 요청이다.
         if(!req.body instanceof Array ) {
@@ -37,37 +160,113 @@ module.exports = {
                 "description" : "잘못된 요청"
             });
         }
-        
+        //추가시작
+	    //return;
         var sqlText = [];
+    	var seqNo = 0;
+    	var retSeqNo = "";
         var idx = 0; while(idx < req.body.length) {
-            sqlText.push(
-                "  INSERT INTO TBL_REQUEST ( "
-                + "  MSGID, MESSAGE_TYPE, PHN, "
-                + "  MSG, MSG_SMS, SMS_SENDER, SMS_KIND, "
-                + "  TMPL_ID, PROFILE, RESERVE_DT, REG_DT, REMARK1 "
-                + ") VALUES ( "
-                + "  next value for seqrequest "               // id
-                + "  , '" + req.body[idx]['message_type'] + "'"
-                + "  , '" + req.body[idx]['phn'] + "'"
-                + "  , '" + req.body[idx]['msg'] + "'"
-                + "  , (case when '" + req.body[idx]['chkBudal'] + "'='T' then '" + req.body[idx]['msgCont01'] + "' else null end) "
-                + "  , (case when '" + req.body[idx]['chkBudal'] + "'='T' then '" + req.body[idx]['selReplyNum01'] + "' else null end) "
-                + "  , null "
-                + "  , '" + req.body[idx]['tmpl_id'] + "'"
-                + "  , (select profile from tblyellowid where yellowid = '" + req.body[idx]['selYellowId01'] + "' and status = '02') "
-                + "  , (case when '" + req.body[idx]['chkReserve'] + "'='T' then '" + req.body[idx]['revDttm'] + "' else '00000000000000' end) "
-                + "  , dbo.getLocalDate(DEFAULT)"
-                + "  , '" + req.body[idx]['remark1'] + "'"
-                + ") ;"
-            );
-            ++idx
+
+	    	var sqlSelText = "select next value for seqrequest as seq;";
+
+			async.waterfall([
+
+				//function(callback) {
+				//	console.log("Message Send Start......");
+				//    //var gggg = dbHelper.sqlNewSelect(sqlSelText, res);
+				//    async.waterfall([
+				//    	function(callback) {
+				//	    	//var gggg = dbHelper.sqlNewSelect(sqlSelText, res, callback);
+				//	    	var gggg = dbHelper.sqlNewSelect1(sqlSelText);
+				//	    	//TODO 여기에서 시퀀스만 받음 되는데...
+				//	        console.log("~~~~~~~~~~~~~~~~~ -> " + gggg);
+				//	    	callback(null, "999999  888888");
+				//    	},
+				//    	],	function (err, result) {console.log("seqNo end -> " + JSON.stringify(result));}
+				//    );
+			    //    seqNo++;
+			    //    callback(null, seqNo);
+				//},
+				function(callback) {
+					console.log("Message Send Start......");
+				    async.waterfall([
+				    	function(callback) {
+							const moment = require('moment');
+							var mm = moment(); // moment를 초기화 한다
+							var output = mm.format("YYYYMMDDHHmmssSSS"); // format으로 출력한다
+							seqNo = parseInt(output);
+					        console.log("~~~~~~~~~~~~~~~~~ -> " + seqNo);
+					    	callback(null, seqNo);
+				    	},
+				    	],	function (err, result) {console.log("seqNo end");}
+				    );
+			        callback(null, seqNo);
+				},
+				function(seqNo, callback) {
+				    console.log("● 쿼리 만들자 " + seqNo);
+				    if(idx == 0) {
+				    	retSeqNo = seqNo + "^" + req.body[idx]['orgMsgId'];
+				    } else {
+				    	retSeqNo = retSeqNo + "," + seqNo + "^" + req.body[idx]['orgMsgId'];
+				    }
+				    console.log("● 전송쿼리1");
+            		sqlText.push(
+            		    "  INSERT INTO TBL_REQUEST ( "
+            		    + "  MSGID, MESSAGE_TYPE, PHN, "
+            		    + "  MSG, MSG_SMS, SMS_SENDER, SMS_KIND, "
+            		    + "  TMPL_ID, PROFILE, RESERVE_DT, REG_DT, REMARK1 "
+            		    + ") VALUES ( "
+            		    //+ "  next value for seqrequest "               // id
+            		    + seqNo
+            		    + "  , '" + req.body[idx]['message_type'] + "'"
+            		    + "  , '" + req.body[idx]['phn'] + "'"
+            		    + "  , '" + req.body[idx]['msg'] + "'"
+            		    + "  , (case when '" + req.body[idx]['chkBudal'] + "'='T' then '" + req.body[idx]['msgCont01'] + "' else null end) "
+            		    + "  , (case when '" + req.body[idx]['chkBudal'] + "'='T' then '" + req.body[idx]['selReplyNum01'] + "' else null end) "
+            		    + "  , null "
+            		    + "  , '" + req.body[idx]['tmpl_id'] + "'"
+            		    + "  , (select profile from tblyellowid where yellowid = '" + req.body[idx]['selYellowId01'] + "' and status = '02') "
+            		    + "  , (case when '" + req.body[idx]['chkReserve'] + "'='T' then '" + req.body[idx]['revDttm'] + "' else '00000000000000' end) "
+            		    + "  , dbo.getLocalDate(DEFAULT)"
+            		    + "  , '" + req.body[idx]['remark1'] + "'"
+            		    + ") ;"
+            		    );
+            		//잔애차감 로직 추가 필요, 그러려면 사용자ID 추가 필요...
+					console.log("● 전송쿼리2 -> 잔액차감");
+                    sqlText.push(
+                        "  UPDATE A SET \n"
+                        + "       A.NBALANCE = (A.NBALANCE - (select isnull(( \n"
+                        + "          select isnull(nrate,0) \n"
+                        + "             from tblinternalrate tir, tbluser tu \n"
+                        + "            where tir.vclass = tu.valtclass \n"
+                        + "              and tir.ckind = CASE WHEN 'at' = '" + req.body[idx]['message_type'] + "' THEN 'A' ELSE 'C' END \n"
+                        + "              and tu.nsid = A.NSID \n"
+                        + "           ),0))) \n"
+                        + "  FROM TBLUSER A \n"
+                        + " INNER JOIN TBL_RESTAPI_USER AS B \n"
+                        + "    ON A.NSID=B.NSID \n"
+                        + " WHERE B.AGENTID = '" + args["agentKey"] + "' \n"
+                        //+ "   AND A.VUSERID='" + args["user"] +"';"
+                        + "   AND A.NSID='" + args["user"] +"';"
+                    );
+			        callback(null);
+				}
+			],
+			function (err, result) {
+				console.log("end");
+			});
+
+        	++idx;
+			console.log("***************************************");
         }
-        
-        return dbHelper.sqlExecute(sqlText, res);
+ 		var id = "0";
+       return dbHelper.sqlExecute(sqlText, retSeqNo, res);
     },
+
     updateSendMsg: function (req, res, id) {
 
-        // 일괄업데이트 즉 id 가 없는것은 지원하지 않는다.
+ 		var retSeqNo = "0";
+       // 일괄업데이트 즉 id 가 없는것은 지원하지 않는다.
         // 즉 단건도 아니고, 본문(항목명세)도 없다.
         if((typeof id === 'undefined' || null == id)
             && (!req.body instanceof Array)) {
@@ -85,8 +284,8 @@ module.exports = {
                 + "  REG_DT = dbo.getLocalDate(DEFAULT) "
                 + "  , PHN = '" + req.body['phn'] + "'"
                 + "  , MSG = '" + req.body['msg'] + "'"
-                + "  , MSG_SMS = (case when '" + req.body['chkBudal'] + "'='T' then " + req.body['msgCont01'] + " else null end) "
-                + "  , SMS_SENDER = (case when '" + req.body['chkBudal'] + "'='T' then " + req.body['selReplyNum01'] + " else null end) "
+                + "  , MSG_SMS = (case when '" + req.body['chkBudal'] + "'='T' then '" + req.body['msgCont01'] + "' else null end) "
+                + "  , SMS_SENDER = (case when '" + req.body['chkBudal'] + "'='T' then '" + req.body['selReplyNum01'] + "' else null end) "
                 + "  , TMPL_ID = '" + req.body['tmpl_id'] + "'"
                 + "  , RESERVE_DT = (case when '" + req.body['chkReserve'] + "'='T' then '" + req.body['revDttm'] + "' else '00000000000000' end) "
                 + "  , REMARK1 = '" + req.body['remark1'] + "'"
@@ -100,21 +299,21 @@ module.exports = {
                 + "  REG_DT = dbo.getLocalDate(DEFAULT) "
                 + "  , PHN = '" + req.body[idx]['phn'] + "'"
                 + "  , MSG = '" + req.body[idx]['msg'] + "'"
-                + "  , MSG_SMS = (case when '" + req.body[idx]['chkBudal'] + "'='T' then " + req.body[idx]['msgCont01'] + " else null end) "
-                + "  , SMS_SENDER = (case when '" + req.body[idx]['chkBudal'] + "'='T' then " + req.body[idx]['selReplyNum01'] + " else null end) "
+                + "  , MSG_SMS = (case when '" + req.body[idx]['chkBudal'] + "'='T' then '" + req.body[idx]['msgCont01'] + "' else null end) "
+                + "  , SMS_SENDER = (case when '" + req.body[idx]['chkBudal'] + "'='T' then '" + req.body[idx]['selReplyNum01'] + "' else null end) "
                 + "  , TMPL_ID = '" + req.body[idx]['tmpl_id'] + "'"
                 + "  , RESERVE_DT = (case when '" + req.body[idx]['chkReserve'] + "'='T' then '" + req.body[idx]['revDttm'] + "' else '00000000000000' end) "
                 + "  , REMARK1 = '" + req.body[idx]['remark1'] + "'"
-                + " WHERE MSGID = '" + req.body[idx]["id"] + "';"
+                + " WHERE MSGID = '" + req.body[idx]["msgid"] + "';"
                 );
                 ++idx
             }
         }
-        
-        return dbHelper.sqlExecute(sqlText, res, id);
+		return dbHelper.sqlUpdate(sqlText, res);
     },
     deleteSendMsg: function (req, res, id) {
         
+		var retSeqNo = "0";
         // 일괄업데이트 즉 id 가 없는것은 지원하지 않는다.
         // 즉 단건도 아니고, 본문(항목명세)도 없다.
         if((typeof id === 'undefined' || null == id)
@@ -128,21 +327,23 @@ module.exports = {
         var sqlText = []; // object or array
         // id가 있으면 본문은 단건에 대한 오브젝트이다.
         if(typeof id !== 'undefined' && null != id) {
+           	console.log("단건삭제 " + id);
             sqlText.push(
                 "  DELETE FROM TBL_REQUEST "
                 + " WHERE MSGID = '" + id + "'"
             );
         } else {
             var idx = 0; while(idx < req.body.length) {
+           		console.log("여러건 삭제 " + req.body[idx]["msgid"]);
                 sqlText.push(
                 "  DELETE FROM TBL_REQUEST "
-                + " WHERE MSGID = '" + req.body[idx]["id"] + "';"
+                + " WHERE MSGID = '" + req.body[idx]["msgid"] + "';"
                 );
                 ++idx
             }
         }
         
-        return dbHelper.sqlExecute(sqlText, res, id);
+ 		return dbHelper.sqlUpdate(sqlText, res);
     }
     /*
     status : "200",

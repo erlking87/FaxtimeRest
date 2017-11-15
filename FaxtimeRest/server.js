@@ -42,7 +42,7 @@ app.use('/docs', swaggerUi({
 
 server.listen(port, function () { // fifth and final change
     console.log("start server port : " + port);
-    server.timeout = 6000000000;
+	server.timeout = 6000000000;
 });
 
 app.get('/', (req, res) => {
