@@ -19,9 +19,9 @@ var app = express();
 
 var server = http.createServer(app);
 
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -42,6 +42,7 @@ app.use('/docs', swaggerUi({
 
 server.listen(port, function () { // fifth and final change
     console.log("start server port : " + port);
+    server.timeout = 6000000000;
 });
 
 app.get('/', (req, res) => {
