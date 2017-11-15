@@ -35,11 +35,11 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "post": {
                 "tags": [
-                  "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
                 ],
                 "operationId": "FAXTIME_SDK_SMS_SEND_POST",
                 "consumes": [
@@ -79,7 +79,7 @@
             "put": {
                 "operationId": "FAXTIME_SDK_SMS_SEND_PUT",
                 "tags": [
-                  "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -117,7 +117,7 @@
             "delete": {
                 "operationId": "FAXTIME_SDK_SMS_SEND_DELETE",
                 "tags": [
-                  "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -181,12 +181,12 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "put": {
                 "operationId": "FAXTIME_SDK_SMS_SEND_PUTBYID",
                 "tags": [
-                  "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -225,7 +225,7 @@
             "delete": {
                 "operationId": "FAXTIME_SDK_SMS_SEND_DELETEBYID",
                 "tags": [
-                  "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -287,7 +287,7 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             }
         },
         "/v1/faxtime/mms/send": {
@@ -319,12 +319,12 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "post": {
                 "operationId": "FAXTIME_SDK_MMS_SEND_POST",
                 "tags": [
-                  "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
                 ],
                 "consumes": [
                     "application/json"
@@ -340,7 +340,7 @@
                         "in" : "body",
                         "required" : true,
                         "schema": {
-                            "type": "array",
+                            "type": "object",
                             "items": {
                                 "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_POST"
                             }
@@ -363,7 +363,7 @@
             "put": {
                 "operationId": "FAXTIME_SDK_MMS_SEND_PUT",
                 "tags": [
-                  "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -401,7 +401,7 @@
             "delete": {
                 "operationId": "FAXTIME_SDK_MMS_SEND_DELETE",
                 "tags": [
-                  "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -465,12 +465,12 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "put": {
                 "operationId": "FAXTIME_SDK_MMS_SEND_PUTBYID",
                 "tags": [
-                  "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -510,7 +510,7 @@
             "delete": {
                 "operationId": "FAXTIME_SDK_MMS_SEND_DELETEBYID",
                 "tags": [
-                  "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -572,7 +572,7 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             }
         },
         "/v1/faxtime/fax/send": {
@@ -604,11 +604,11 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "post": {
                 "tags": [
-                  "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
                 ],
                 "operationId": "FAXTIME_FC_FAX_SEND_POST",
                 "consumes": [
@@ -648,7 +648,7 @@
             "put": {
                 "operationId": "FAXTIME_FC_FAX_SEND_PUT",
                 "tags": [
-                  "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -686,7 +686,7 @@
             "delete": {
                 "operationId": "FAXTIME_FC_FAX_SEND_DELETE",
                 "tags": [
-                  "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -750,12 +750,12 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "put": {
                 "operationId": "FAXTIME_FC_FAX_SEND_PUTBYID",
                 "tags": [
-                  "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -795,7 +795,7 @@
             "delete": {
                 "operationId": "FAXTIME_FC_FAX_SEND_DELETEBYID",
                 "tags": [
-                  "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
                 ],
                 "produces": [
                     "application/json"
@@ -850,11 +850,11 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "post": {
                 "tags": [
-                  "/V1/ALIMTALK/TBL_REQUEST"
+                    "/V1/ALIMTALK/TBL_REQUEST"
                 ],
                 "operationId": "ALIMTALK_TBL_REQUEST_POST",
                 "consumes": [
@@ -894,7 +894,7 @@
             "put": {
                 "operationId": "ALIMTALK_TBL_REQUEST_PUT",
                 "tags": [
-                  "/V1/ALIMTALK/TBL_REQUEST"
+                    "/V1/ALIMTALK/TBL_REQUEST"
                 ],
                 "produces": [
                     "application/json"
@@ -932,7 +932,7 @@
             "delete": {
                 "operationId": "ALIMTALK_TBL_REQUEST_DELETE",
                 "tags": [
-                  "/V1/ALIMTALK/TBL_REQUEST"
+                    "/V1/ALIMTALK/TBL_REQUEST"
                 ],
                 "produces": [
                     "application/json"
@@ -996,12 +996,12 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             },
             "put": {
                 "operationId": "ALIMTALK_TBL_REQUEST_PUTBYID",
                 "tags": [
-                  "/V1/ALIMTALK/TBL_REQUEST"
+                    "/V1/ALIMTALK/TBL_REQUEST"
                 ],
                 "produces": [
                     "application/json"
@@ -1040,7 +1040,7 @@
             "delete": {
                 "operationId": "ALIMTALK_TBL_REQUEST_DELETEBYID",
                 "tags": [
-                  "/V1/ALIMTALK/TBL_REQUEST"
+                    "/V1/ALIMTALK/TBL_REQUEST"
                 ],
                 "produces": [
                     "application/json"
@@ -1102,7 +1102,7 @@
                         }
                     }
                 },
-                "deprecated": false 
+                "deprecated": false
             }
         },
         "/v1/others/file/upload" : {
