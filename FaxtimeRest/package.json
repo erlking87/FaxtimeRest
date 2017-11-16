@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "description": "FaxtimeRest",
     "main": "server.js",
+    "license": "UNLICENSED",
     "author": {
         "name": "songhj"
     },
@@ -19,6 +20,5 @@
         "swaggerize-express": "^4.0.0",
         "swaggerize-ui": "^1.0.1",
         "swagmock": "~0.0.2"
-    },
-    { "license": "UNLICENSED" }
+    }
 }
