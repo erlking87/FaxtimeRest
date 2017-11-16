@@ -4,6 +4,7 @@
     "description": "FaxtimeRest",
     "main": "server.js",
     "license": "UNLICENSED",
+    "repository": "https://github.com/caolan/async",
     "author": {
         "name": "songhj"
     },
