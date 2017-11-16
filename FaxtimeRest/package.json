@@ -3,8 +3,8 @@
     "version": "0.0.0",
     "description": "FaxtimeRest",
     "main": "server.js",
-    "license": "UNLICENSED",
-    "repository": "https://github.com/caolan/async",
+    //"license": "UNLICENSED",
+    //"repository": "https://github.com/caolan/async",
     "author": {
         "name": "songhj"
     },
