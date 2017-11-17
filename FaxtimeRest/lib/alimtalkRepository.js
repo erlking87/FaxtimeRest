@@ -10,7 +10,7 @@ module.exports = {
     // 스웨거 스팩상 라우터에서 패스 파라미터는 단일항목만 지원함
     selectSendMsg: function (req, res, id) {
         var args = dbHelper.sqlSelectParameters(req);
-        console.log(args["msgid"]);
+        console.log("msg id -> " + args["msgid"]);
         var currentPage = 1;
         //msgid가 들어오면 단건조회 -> 페이지는 뭐가 들어와도 1
 	    if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
