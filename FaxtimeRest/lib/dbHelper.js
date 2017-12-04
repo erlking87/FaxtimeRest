@@ -51,6 +51,14 @@ exports.sqlSelectParameters = function (req) {
     result["currentPage"] = findObject("page", req.query, 1);
     result["startIndex"] = (result["currentPage"] - 1) * result["pageSize"] + 1;
     result["endIndex"] = result["currentPage"] * result["pageSize"];
+    //////////////////////////////////////////////////////////
+    result["fdate"] = findObject("fdate", req.query, null);
+    result["tdate"] = findObject("tdate", req.query, null);
+    result["ntblusersid"] = findObject("ntblusersid", req.query, null);
+    result["message_type"] = findObject("message_type", req.query, null);
+    result["msgid"] = findObject("msgid", req.query, null);
+    result["indvcustid"] = findObject("indvcustid", req.query, null);
+    //////////////////////////////////////////////////////////
     return result;
 }
 
@@ -147,6 +155,133 @@ exports.sqlExecute = function (sqlText, res) {
         return res.send({
             "status": "500",
             "description": "내부 서버 오류"
+        });
+    });
+};
+
+exports.sqlNewExecute = function (sqlText, seqNo, res) {
+    var affected = 0;
+    const pool = new sql.ConnectionPool(dbConfig, err => {
+        const transaction = new sql.Transaction(pool);
+        transaction.begin(err => {
+            if (typeof err !== 'undefined' && null != err) {
+                return res.send({
+                    "status": "500",
+                    "description": "내부 서버 오류0000"
+                });
+            }
+            const request = new sql.Request(transaction);
+            function done() {
+                transaction.commit(err => {
+                    if (typeof err !== 'undefined' && null != err) {
+                        return res.send({
+                            "status": "500",
+                            "description": "내부 서버 오류1111"
+                        });
+                    }
+                    return res.send({
+                        "msgIds": ((0 == affected) ? "0" : seqNo),
+                        "status": ((0 == affected) ? "204" : "200"),
+                        "description": ((0 == affected) ? "콘텐츠 없음" : "성공"),
+                        "affected": affected
+                    });
+                });
+            }
+            var nextItem = function (i) {
+                if (i >= sqlText.length) {
+                    // All done
+                    done();
+                    return;
+                } else {
+                    //console.log("Insert Query -> " + sqlText[i]);
+                    LogWriter(sqlText[i]);
+                    request.query(sqlText[i], (err, result) => {
+                        if (typeof err !== 'undefined' && null != err) {
+                            console.log("Insert Query err -> " + err);
+                            transaction.rollback(err => {
+                                return res.send({
+                                    "status": "500",
+                                    "description": "내부 서버 오류2222"
+                                });
+                            });
+                            return;
+                        }
+                        affected = affected + result.rowsAffected[0];
+                        nextItem(i + 1);
+                    });
+                }
+            }
+            nextItem(0);
+        });
+    });
+
+    pool.on('error', err => {
+        return res.send({
+            "status": "500",
+            "description": "내부 서버 오류3333"
+        });
+    });
+};
+
+exports.sqlUpdate = function (sqlText, res) {
+    var affected = 0;
+    const pool = new sql.ConnectionPool(dbConfig, err => {
+        const transaction = new sql.Transaction(pool);
+        transaction.begin(err => {
+            if (typeof err !== 'undefined' && null != err) {
+                return res.send({
+                    "status": "500",
+                    "description": "내부 서버 오류0000"
+                });
+            }
+            const request = new sql.Request(transaction);
+            function done() {
+                transaction.commit(err => {
+                    if (typeof err !== 'undefined' && null != err) {
+                        return res.send({
+                            "status": "500",
+                            "description": "내부 서버 오류1111"
+                        });
+                    }
+                    return res.send({
+                        "status": ((0 == affected) ? "204" : "200"),
+                        "description": ((0 == affected) ? "콘텐츠 없음" : "성공"),
+                        "affected": affected
+                    });
+                });
+            }
+            var nextItem = function (i) {
+                if (i >= sqlText.length) {
+                    // All done
+                    done();
+                    return;
+                } else {
+                    console.log("Update Query -> " + sqlText[i]);
+                    LogWriter(sqlText[i]);
+                    request.query(sqlText[i], (err, result) => {
+                        if (typeof err !== 'undefined' && null != err) {
+                            console.log("Insert Query err -> " + err);
+                            transaction.rollback(err => {
+                                return res.send({
+                                    "status": "500",
+                                    "description": "내부 서버 오류2222"
+                                });
+                            });
+                            return;
+                        }
+                        affected = affected + result.rowsAffected[0];
+                        nextItem(i + 1);
+                    });
+                }
+            }
+            nextItem(0);
+        });
+    });
+
+    pool.on('error', err => {
+        return res.send({
+            "status": "500",
+            "description": "내부 서버 오류3333"
         });
     });
 };

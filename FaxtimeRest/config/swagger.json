@@ -5,1169 +5,1201 @@
     "title": "TAIHOINST WEB API",
     "description": "A TAIHOINST WEB API based on Swagger and built using Node.js"
   },
-  "paths": {
-    "/v1/faxtime/sms/send": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "operationId": "FAXTIME_SDK_SMS_SEND_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" }
-        ],
-        "description": "SMS 발송 데이터 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
+    "paths": {
+        "/v1/faxtime/sms/send": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "operationId": "FAXTIME_SDK_SMS_SEND_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" }
+                ],
+                "description": "SMS 발송 데이터 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "post": {
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "operationId": "FAXTIME_SDK_SMS_SEND_POST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/senderParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_POST"
+                            }
+                        }
+                    }
+                ],
+                "description": "SMS 발송 데이터 생성",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "operationId": "FAXTIME_SDK_SMS_SEND_PUT",
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "SMS 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "FAXTIME_SDK_SMS_SEND_DELETE",
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_DELETE"
+                            }
+                        }
+                    }
+                ],
+                "description": "SMS 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
         },
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "operationId": "FAXTIME_SDK_SMS_SEND_POST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/senderParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_POST"
-              }
+        "/v1/faxtime/sms/send/{id}": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "operationId": "FAXTIME_SDK_SMS_SEND_GETBYID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "description": "SMS 발송 데이터 조회",
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "put": {
+                "operationId": "FAXTIME_SDK_SMS_SEND_PUTBYID",
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_POST"
+                            }
+                        }
+                    }
+                ],
+                "description": "SMS 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "FAXTIME_SDK_SMS_SEND_DELETEBYID",
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "description": "SMS 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
-        ],
-        "description": "SMS 발송 데이터 생성",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "FAXTIME_SDK_SMS_SEND_PUT",
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_PUT"
-              }
-            }
-          }
-        ],
-        "description": "SMS 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "FAXTIME_SDK_SMS_SEND_DELETE",
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_DELETE"
-              }
-            }
-          }
-        ],
-        "description": "SMS 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/faxtime/sms/send/{id}": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "operationId": "FAXTIME_SDK_SMS_SEND_GETBYID",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "description": "SMS 발송 데이터 조회",
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      },
-      "put": {
-        "operationId": "FAXTIME_SDK_SMS_SEND_PUTBYID",
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_SMS_DATA_POST"
-              }
+        "/v1/faxtime/sms/result": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/SMS/SDK_SMS_RESULT"
+                ],
+                "operationId": "FAXTIME_SDK_SMS_RESULT_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "message identifier...",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "description": "SMS 발송 결과 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
             }
-          }
-        ],
-        "description": "SMS 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "FAXTIME_SDK_SMS_SEND_DELETEBYID",
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "description": "SMS 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/faxtime/sms/result": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/SMS/SDK_SMS_RESULT"
-        ],
-        "operationId": "FAXTIME_SDK_SMS_RESULT_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "message identifier...",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "description": "SMS 발송 결과 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      }
-    },
-    "/v1/faxtime/mms/send": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "operationId": "FAXTIME_SDK_MMS_SEND_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" }
-        ],
-        "description": "MMS 발송 데이터 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
+        "/v1/faxtime/mms/send": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "operationId": "FAXTIME_SDK_MMS_SEND_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" }
+                ],
+                "description": "MMS 발송 데이터 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "post": {
+                "operationId": "FAXTIME_SDK_MMS_SEND_POST",
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/senderParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_POST"
+                            }
+                        }
+                    }
+                ],
+                "description": "MMS 발송 데이터 생성",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "operationId": "FAXTIME_SDK_MMS_SEND_PUT",
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "MMS 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "FAXTIME_SDK_MMS_SEND_DELETE",
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_DELETE"
+                            }
+                        }
+                    }
+                ],
+                "description": "MMS 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
         },
-        "deprecated": false
-      },
-      "post": {
-        "operationId": "FAXTIME_SDK_MMS_SEND_POST",
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/senderParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_POST"
-              }
+        "/v1/faxtime/mms/send/{id}": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "operationId": "FAXTIME_SDK_MMS_SEND_GETBYID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "description": "MMS 발송 데이터 조회",
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "put": {
+                "operationId": "FAXTIME_SDK_MMS_SEND_PUTBYID",
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json",
+                    "text/html"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "MMS 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "FAXTIME_SDK_MMS_SEND_DELETEBYID",
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "description": "MMS 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
-        ],
-        "description": "MMS 발송 데이터 생성",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "FAXTIME_SDK_MMS_SEND_PUT",
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_PUT"
-              }
-            }
-          }
-        ],
-        "description": "MMS 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "FAXTIME_SDK_MMS_SEND_DELETE",
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_DELETE"
-              }
-            }
-          }
-        ],
-        "description": "MMS 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/faxtime/mms/send/{id}": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "operationId": "FAXTIME_SDK_MMS_SEND_GETBYID",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "description": "MMS 발송 데이터 조회",
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      },
-      "put": {
-        "operationId": "FAXTIME_SDK_MMS_SEND_PUTBYID",
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json",
-          "text/html"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_SDK_MMS_DATA_PUT"
-              }
+        "/v1/faxtime/mms/result": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/MMS/SDK_MMS_RESULT"
+                ],
+                "operationId": "FAXTIME_SDK_MMS_RESULT_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "message identifier...",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "description": "MMS 발송 결과 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
             }
-          }
-        ],
-        "description": "MMS 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "FAXTIME_SDK_MMS_SEND_DELETEBYID",
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "description": "MMS 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/faxtime/mms/result": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/MMS/SDK_MMS_RESULT"
-        ],
-        "operationId": "FAXTIME_SDK_MMS_RESULT_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "message identifier...",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "description": "MMS 발송 결과 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      }
-    },
-    "/v1/faxtime/fax/send": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "operationId": "FAXTIME_FC_FAX_SEND_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" }
-        ],
-        "description": "FAX 발송 데이터 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
+        "/v1/faxtime/fax/send": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "operationId": "FAXTIME_FC_FAX_SEND_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" }
+                ],
+                "description": "FAX 발송 데이터 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "post": {
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "operationId": "FAXTIME_FC_FAX_SEND_POST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/senderParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_META_POST"
+                            }
+                        }
+                    }
+                ],
+                "description": "FAX 발송 데이터 생성",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "operationId": "FAXTIME_FC_FAX_SEND_PUT",
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_META_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "FAX 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "FAXTIME_FC_FAX_SEND_DELETE",
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA_DELETE"
+                            }
+                        }
+                    }
+                ],
+                "description": "FAX 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
         },
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "operationId": "FAXTIME_FC_FAX_SEND_POST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/senderParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_FC_FAX_META_POST"
-              }
+        "/v1/faxtime/fax/send/{id}": {
+            "get": {
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "operationId": "FAXTIME_FC_FAX_SEND_GETBYID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "description": "FAX 발송 데이터 조회",
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "put": {
+                "operationId": "FAXTIME_FC_FAX_SEND_PUTBYID",
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json",
+                    "text/html"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/FAXTIME_FC_FAX_META_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "FAX 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "FAXTIME_FC_FAX_SEND_DELETEBYID",
+                "tags": [
+                    "/V1/FAXTIME/FAX/FC_FAX_SEND"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "description": "FAX 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
-        ],
-        "description": "FAX 발송 데이터 생성",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "FAXTIME_FC_FAX_SEND_PUT",
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_FC_FAX_META_PUT"
-              }
-            }
-          }
-        ],
-        "description": "FAX 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "FAXTIME_FC_FAX_SEND_DELETE",
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_FC_FAX_DATA_DELETE"
-              }
-            }
-          }
-        ],
-        "description": "FAX 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/faxtime/fax/send/{id}": {
-      "get": {
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "operationId": "FAXTIME_FC_FAX_SEND_GETBYID",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "description": "FAX 발송 데이터 조회",
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      },
-      "put": {
-        "operationId": "FAXTIME_FC_FAX_SEND_PUTBYID",
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json",
-          "text/html"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/FAXTIME_FC_FAX_META_PUT"
-              }
+        "/v1/alimtalk/send": {
+            "get": {
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "operationId": "ALIMTALK_TBL_REQUEST_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" }
+                ],
+                "description": "알림톡 발송 데이터 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "post": {
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "operationId": "ALIMTALK_TBL_REQUEST_POST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/senderParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_POST"
+                            }
+                        }
+                    }
+                ],
+                "description": "알림톡 발송 데이터 생성",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "operationId": "ALIMTALK_TBL_REQUEST_PUT",
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "알림톡 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "ALIMTALK_TBL_REQUEST_DELETE",
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_DELETE"
+                            }
+                        }
+                    }
+                ],
+                "description": "알림톡 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
-        ],
-        "description": "FAX 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "FAXTIME_FC_FAX_SEND_DELETEBYID",
-        "tags": [
-          "/V1/FAXTIME/FAX/FC_FAX_SEND"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "description": "FAX 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/alimtalk/send": {
-      "get": {
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "operationId": "ALIMTALK_TBL_REQUEST_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" }
-        ],
-        "description": "알림톡 발송 데이터 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      },
-      "post": {
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "operationId": "ALIMTALK_TBL_REQUEST_POST",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/senderParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_POST"
-              }
+        "/v1/alimtalk/send/{id}": {
+            "get": {
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "operationId": "ALIMTALK_TBL_REQUEST_GETBYID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "description": "알림톡 발송 데이터 조회",
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "put": {
+                "operationId": "ALIMTALK_TBL_REQUEST_PUTBYID",
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" },
+                    {
+                        "name": "datas",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_PUT"
+                            }
+                        }
+                    }
+                ],
+                "description": "알림톡 발송 데이터 수정",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "ALIMTALK_TBL_REQUEST_DELETEBYID",
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/msgParam" }
+                ],
+                "description": "알림톡 발송 데이터 삭제",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
             }
-          }
-        ],
-        "description": "알림톡 발송 데이터 생성",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "ALIMTALK_TBL_REQUEST_PUT",
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_PUT"
-              }
-            }
-          }
-        ],
-        "description": "알림톡 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "ALIMTALK_TBL_REQUEST_DELETE",
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_DELETE"
-              }
-            }
-          }
-        ],
-        "description": "알림톡 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/alimtalk/send/{id}": {
-      "get": {
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "operationId": "ALIMTALK_TBL_REQUEST_GETBYID",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "description": "알림톡 발송 데이터 조회",
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      },
-      "put": {
-        "operationId": "ALIMTALK_TBL_REQUEST_PUTBYID",
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" },
-          {
-            "name": "datas",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/ALIMTALK_TBL_REQUEST_DATA_PUT"
-              }
+        "/v1/alimtalk/reserve_send": {
+            "get": {
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST"
+                ],
+                "operationId": "ALIMTALK_RESERVE_TBL_REQUEST_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" }
+                ],
+                "description": "알림톡 발송 예약데이터 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
             }
-          }
-        ],
-        "description": "알림톡 발송 데이터 수정",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "ALIMTALK_TBL_REQUEST_DELETEBYID",
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/msgParam" }
-        ],
-        "description": "알림톡 발송 데이터 삭제",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/alimtalk/result": {
-      "get": {
-        "tags": [
-          "/V1/ALIMTALK/TBL_REQUEST_RESULT"
-        ],
-        "operationId": "ALIMTALK_TBL_REQUEST_RESULT_GET",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          { "$ref": "#/parameters/userParam" },
-          { "$ref": "#/parameters/pageParam" },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "message identifier...",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "description": "알림톡 발송 결과 조회",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
-            }
-          }
         },
-        "deprecated": false
-      }
-    },
-    "/v1/others/file/upload": {
-      "post": {
-        "tags": [
-          "/V1/OTHERS/FILE_UPLOAD"
-        ],
-        "operationId": "OTHERS_FILE_UPLOAD_POST",
-        "consumes": [
-          "multipart/form-data",
-          "application/x-www-form-urlencoded"
-        ],
-        "produces": [
-          "application/json",
-          "text/html"
-        ],
-        "parameters": [
-          { "$ref": "#/parameters/agentParam" },
-          {
-            "name": "objName",
-            "in": "query",
-            "description": "name...",
-            "required": true,
-            "type": "string",
-            "default": "mmsfile1"
-          },
-          {
-            "name": "maxByte",
-            "in": "query",
-            "description": "byte...",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "subPath",
-            "in": "query",
-            "description": "path...",
-            "required": false,
-            "type": "string",
-            "default": "mmsfile"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "description": "첨부파일",
-            "required": true,
-            "type": "file"
-          }
-        ],
-        "description": "파일업로드",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "items": {
-                "$ref": "#/definitions/RESULTS"
-              }
+        "/v1/alimtalk/result": {
+            "get": {
+                "tags": [
+                    "/V1/ALIMTALK/TBL_REQUEST_RESULT"
+                ],
+                "operationId": "ALIMTALK_TBL_REQUEST_RESULT_GET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    { "$ref": "#/parameters/userParam" },
+                    { "$ref": "#/parameters/pageParam" },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "message identifier...",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "description": "알림톡 발송 결과 조회",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
             }
-          }
+        },
+        "/v1/others/file/upload": {
+            "post": {
+                "tags": [
+                    "/V1/OTHERS/FILE_UPLOAD"
+                ],
+                "operationId": "OTHERS_FILE_UPLOAD_POST",
+                "consumes": [
+                    "multipart/form-data",
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json",
+                    "text/html"
+                ],
+                "parameters": [
+                    { "$ref": "#/parameters/agentParam" },
+                    {
+                        "name": "objName",
+                        "in": "query",
+                        "description": "name...",
+                        "required": true,
+                        "type": "string",
+                        "default": "mmsfile1"
+                    },
+                    {
+                        "name": "maxByte",
+                        "in": "query",
+                        "description": "byte...",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "subPath",
+                        "in": "query",
+                        "description": "path...",
+                        "required": false,
+                        "type": "string",
+                        "default": "mmsfile"
+                    },
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "description": "첨부파일",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "description": "파일업로드",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "items": {
+                                "$ref": "#/definitions/RESULTS"
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  },
+    },
   "parameters": {
     "agentParam": {
       "name": "Agent-Key",
@@ -1541,88 +1573,94 @@
     },
     "ALIMTALK_TBL_REQUEST_DATA_POST": {
       "type": "object",
-      "properties": {
-        "message_type": {
-          "type": "string"
-        },
-        "phn": {
-          "type": "string"
-        },
-        "msg": {
-          "type": "string"
-        },
-        "chkReserve": {
-          "type": "string"
-        },
-        "chkBudal": {
-          "type": "string"
-        },
-        "msgCont01": {
-          "type": "string"
-        },
-        "selReplyNum01": {
-          "type": "string"
-        },
-        "tmpl_id": {
-          "type": "string"
-        },
-        "selYellowId01": {
-          "type": "string"
-        },
-        "revDttm": {
-          "type": "string"
-        },
-        "remark1": {
-          "type": "string"
+        "properties": {
+            "message_type": {
+                "type": "string"
+            },
+            "indvCustId": {
+                "type": "string"
+            },
+            "phn": {
+                "type": "string"
+            },
+            "msg": {
+                "type": "string"
+            },
+            "chkReserve": {
+                "type": "string"
+            },
+            "chkBudal": {
+                "type": "string"
+            },
+            "msgCont01": {
+                "type": "string"
+            },
+            "selReplyNum01": {
+                "type": "string"
+            },
+            "tmpl_id": {
+                "type": "string"
+            },
+            "selYellowId01": {
+                "type": "string"
+            },
+            "revDttm": {
+                "type": "string"
+            },
+            "orgMsgId": {
+                "type": "string"
+            },
+            "remark1": {
+                "type": "string"
+            }
         }
-      }
     },
     "ALIMTALK_TBL_REQUEST_DATA_PUT": {
       "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "phn": {
-          "type": "string"
-        },
-        "msg": {
-          "type": "string"
-        },
-        "chkReserve": {
-          "type": "string"
-        },
-        "chkBudal": {
-          "type": "string"
-        },
-        "msgCont01": {
-          "type": "string"
-        },
-        "selReplyNum01": {
-          "type": "string"
-        },
-        "tmpl_id": {
-          "type": "string"
-        },
-        "revDttm": {
-          "type": "string"
-        },
-        "remark1": {
-          "type": "string"
+        "properties": {
+            "msgid": {
+                "type": "string"
+            },
+            "phn": {
+                "type": "string"
+            },
+            "msg": {
+                "type": "string"
+            },
+            "chkReserve": {
+                "type": "string"
+            },
+            "chkBudal": {
+                "type": "string"
+            },
+            "msgCont01": {
+                "type": "string"
+            },
+            "selReplyNum01": {
+                "type": "string"
+            },
+            "tmpl_id": {
+                "type": "string"
+            },
+            "revDttm": {
+                "type": "string"
+            },
+            "remark1": {
+                "type": "string"
+            }
         }
-      }
     },
     "ALIMTALK_TBL_REQUEST_DATA_DELETE": {
       "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "user": {
-          "type": "string"
+        "properties": {
+            "msgid": {
+                "type": "integer",
+                "format": "int64"
+            },
+            "user": {
+                "type": "string"
+            }
         }
-      }
     }
   }
 }

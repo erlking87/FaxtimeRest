@@ -10,7 +10,9 @@ module.exports = {
     // 스웨거 스팩상 라우터에서 패스 파라미터는 단일항목만 지원함
     selectSendMsg: function (req, res, id) {
         var args = dbHelper.sqlSelectParameters(req);
+        console.log("user -> " + args["user"]);
         console.log("msg id -> " + args["msgid"]);
+        console.log("indvcustid -> " + args["indvcustid"]);
         var currentPage = 1;
         //msgid가 들어오면 단건조회 -> 페이지는 뭐가 들어와도 1
 	    if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
@@ -33,6 +35,7 @@ module.exports = {
 			+ "                      select * "
 			+ "                      from  ( "
 			+ "                             select msgid "
+            + "                                  , indvcustid "
 			+ "                                  , (select nsid from tbl_altalk_template a "
 			+ "                                     where  a.tepl_id = msg.tmpl_id and a.profile = msg.profile) as tmpl_nsid "
 			+ "                                  , message_type "
@@ -51,21 +54,33 @@ module.exports = {
 			+ "                                  , datalength(msg_sms) as msg_smsdatalength "
 			+ "                                  , datalength(msg) as msgdatalength "
 			+ "                             from  ( "
-			+ "                                    select msgid,message_type,phn,msg,msg_sms,sms_sender,sms_kind,tmpl_id,profile,reg_dt,'S' as result, 'C' as code "
-			+ "                                    from   tbl_request "
+            + "                                    select a.msgid, a.message_type, a.phn, a.msg, a.msg_sms, a.sms_sender, a.sms_kind, a.tmpl_id, a.profile, a.reg_dt, 'S' as result, 'C' as code, b.indvcustid "
+			+ "                                    from   tbl_request a"
+            + "                                    join   tbl_request_by_user b "
+            + "                                    on a.msgid = b.msgid "
+                                                   if (typeof args["indvcustid"] !== 'undefined' && null != args["indvcustid"]) {
+            sqlText = sqlText + "                      and    indvcustid = '" + args["indvcustid"] + "'";
+                                                   }
+            sqlText = sqlText + ""
 			+ "                                    where  convert(varchar(10),reg_dt,120)  between '" + args["fdate"] + "' and '" + args["tdate"] + "' "
-			+ "                                    and    profile in (select profile from tblyellowid where ntblusersid = " + args["ntblusersid"] + " and status='02') ";
+            + "                                    and    profile in (select a.profile from tblyellowid a join tbluser b on a.ntblusersid = b.nsid and b.vuserid = '" + args["user"] + "' and a.status='02') ";
 	                                               if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
-			sqlText = sqlText + "                      and    msgid = '" + args["msgid"] + "'";
+			sqlText = sqlText + "                      and    a.msgid = '" + args["msgid"] + "'";
 			                                       }
 			sqlText = sqlText + ""
 			+ "                                    union all "
-			+ "                                    select msgid,message_type,phn,msg,msg_sms,sms_sender,sms_kind,tmpl_id,profile,reg_dt,result,code "
-			+ "                                    from   tbl_request_result "
+            + "                                    select a.msgid, a.message_type, a.phn, a.msg, a.msg_sms, a.sms_sender, a.sms_kind, a.tmpl_id, a.profile, a.reg_dt, a.result, a.code, b.indvcustid "
+			+ "                                    from   tbl_request_result a"
+            + "                                    join   tbl_request_by_user b "
+            + "                                    on a.msgid = b.msgid "
+                                                   if (typeof args["indvcustid"] !== 'undefined' && null != args["indvcustid"]) {
+            sqlText = sqlText + "                      and    indvcustid = '" + args["indvcustid"] + "'";
+                                                   }
+            sqlText = sqlText + ""
 			+ "                                    where  convert(varchar(10),reg_dt,120)  between '" + args["fdate"] + "' and '" + args["tdate"] + "' "
-			+ "                                    and    profile in (select profile from tblyellowid where ntblusersid = " + args["ntblusersid"] + " and status='02') ";
+            + "                                    and    profile in (select a.profile from tblyellowid a join tbluser b on a.ntblusersid = b.nsid and b.vuserid = '" + args["user"] + "' and a.status='02') ";
 	                                               if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
-			sqlText = sqlText + "                      and    msgid = '" + args["msgid"] + "'";
+			sqlText = sqlText + "                      and    a.msgid = '" + args["msgid"] + "'";
 			                                       }
 			sqlText = sqlText + ""
 			+ "                                   ) msg "
@@ -125,12 +140,18 @@ module.exports = {
 			+ "                                  , datalength(msg_sms) as msg_smsdatalength "
 			+ "                                  , datalength(msg) as msgdatalength "
 			+ "                             from  ( "
-			+ "                                    select msgid,message_type,phn,msg,msg_sms,sms_sender,sms_kind,tmpl_id,profile,reg_dt,'s' as result, 'c' as code "
-			+ "                                    from   tbl_request "
+            + "                                    select a.msgid, a.message_type, a.phn, a.msg, a.msg_sms, a.sms_sender, a.sms_kind, a.tmpl_id, a.profile, a.reg_dt, 'S' as result, 'C' as code, b.indvcustid "
+            + "                                    from   tbl_request a"
+            + "                                    join   tbl_request_by_user b "
+            + "                                    on a.msgid = b.msgid "
+                                                   if (typeof args["indvcustid"] !== 'undefined' && null != args["indvcustid"]) {
+            sqlText = sqlText + "                      and    indvcustid = '" + args["indvcustid"] + "'";
+                                                   }
+            sqlText = sqlText + ""
 			+ "                                    where  convert(varchar(10),reserve_dt,120)  between '" + args["fdate"] + "' and '" + args["tdate"] + "' "
-			+ "                                    and    profile in (select profile from tblyellowid where ntblusersid = " + args["ntblusersid"] + " and status='02') ";
+            + "                                    and    profile in (select a.profile from tblyellowid a join tbluser b on a.ntblusersid = b.nsid and b.vuserid = '" + args["user"] + "' and a.status='02') ";
 	                                               if(typeof args["msgid"] !== 'undefined' && null != args["msgid"]) {
-			sqlText = sqlText + "                      and    msgid = '" + args["msgid"] + "'";
+			sqlText = sqlText + "                      and    a.msgid = '" + args["msgid"] + "'";
 			                                       }
 			sqlText = sqlText + ""
 			+ "                                   ) msg "
@@ -171,22 +192,6 @@ module.exports = {
 
 			async.waterfall([
 
-				//function(callback) {
-				//	console.log("Message Send Start......");
-				//    //var gggg = dbHelper.sqlNewSelect(sqlSelText, res);
-				//    async.waterfall([
-				//    	function(callback) {
-				//	    	//var gggg = dbHelper.sqlNewSelect(sqlSelText, res, callback);
-				//	    	var gggg = dbHelper.sqlNewSelect1(sqlSelText);
-				//	    	//TODO 여기에서 시퀀스만 받음 되는데...
-				//	        console.log("~~~~~~~~~~~~~~~~~ -> " + gggg);
-				//	    	callback(null, "999999  888888");
-				//    	},
-				//    	],	function (err, result) {console.log("seqNo end -> " + JSON.stringify(result));}
-				//    );
-			    //    seqNo++;
-			    //    callback(null, seqNo);
-				//},
 				function(callback) {
 					console.log("Message Send Start......");
 				    async.waterfall([
@@ -231,7 +236,8 @@ module.exports = {
             		    + "  , '" + req.body[idx]['remark1'] + "'"
             		    + ") ;"
             		    );
-            		//잔애차감 로직 추가 필요, 그러려면 사용자ID 추가 필요...
+                    //메세지별 개별고객정보 저장
+                    sqlText.push(" INSERT INTO TBL_REQUEST_BY_USER VALUES ('" + seqNo + "', '" + req.body[idx]['indvCustId'] + "');");
 					console.log("● 전송쿼리2 -> 잔액차감");
                     sqlText.push(
                         "  UPDATE A SET \n"
@@ -246,8 +252,8 @@ module.exports = {
                         + " INNER JOIN TBL_RESTAPI_USER AS B \n"
                         + "    ON A.NSID=B.NSID \n"
                         + " WHERE B.AGENTID = '" + args["agentKey"] + "' \n"
-                        //+ "   AND A.VUSERID='" + args["user"] +"';"
-                        + "   AND A.NSID='" + args["user"] +"';"
+                        + "   AND B.VUSERID='" + args["user"] +"';"
+                        //+ "   AND A.NSID='" + args["user"] +"';"
                     );
 			        callback(null);
 				}
@@ -260,7 +266,7 @@ module.exports = {
 			console.log("***************************************");
         }
  		var id = "0";
-       return dbHelper.sqlExecute(sqlText, retSeqNo, res);
+            return dbHelper.sqlNewExecute(sqlText, retSeqNo, res);
     },
 
     updateSendMsg: function (req, res, id) {
