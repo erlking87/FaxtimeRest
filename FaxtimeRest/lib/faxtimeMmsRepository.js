@@ -153,7 +153,8 @@ module.exports = {
             + "       ,TBLUSER B \n"
             + " WHERE A.AGENTID = '" + agentKey + "' \n"
             + "   AND A.VUSERID='" + user + "' \n"
-            + "   AND A.NSID=B.NSID \n";
+            + "   AND A.NSID=B.NSID \n"
+            + "   AND B.CPREPAID='T' \n";
 
         const pool = new sql.ConnectionPool(dbConfig, err => {
             const request = pool.request();
