@@ -12,21 +12,21 @@ module.exports = {
         var args = dbHelper.sqlSelectParameters(req);
         var sqlText = 
             "  WITH ORDERD_DATA AS ( \n"
-            + "    SELECT RANK() OVER(ORDER BY MSG_ID DESC) ROWID \n"
-            + "           , MSG_ID id \n"
-            + "           , USER_ID ntblusersid \n"
+            + "    SELECT RANK() OVER(ORDER BY FSEQUENCE DESC) ROWID \n"
+            + "           , FSEQUENCE id \n"
+            + "           , FUSERID ntblusersid \n"
             + "           , CASE SCHEDULE_TYPE WHEN 1 THEN 'T' ELSE 'F' END chkReserve \n"
-            + "           , SUBJECT sTitle \n"
-            + "           , SMS_MSG vmessage \n"
-            + "           , SEND_DATE revDttm \n"
-            + "           , CALLBACK vsourcetel \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), 0, CHARINDEX('^', DEST_INFO)) vreceiver \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), CHARINDEX('^', DEST_INFO) + 1, LEN(CONVERT(VARCHAR(80),DEST_INFO)) - CHARINDEX('^', DEST_INFO)) vdestinationtel \n"
-            + "           , RESERVED8 msgRate \n"
+            + "           , FETC1 sTitle \n"
+            + "           , FTEXT vmessage \n"
+            + "           , FSENDDATE revDttm \n"
+            + "           , FCALLBACK vsourcetel \n"
+            + "           , SEND_NAME vreceiver \n"
+            + "           , FDESTINE vdestinationtel \n"
+            + "           , FETC4 msgRate \n"
             + "           , " + args["currentPage"] + " CURRENT_PAGE \n"
             + "           , COUNT(*) OVER() TOTAL_COUNT \n"            
-            + "  FROM SDK_SMS_SEND \n"
-            + " WHERE USER_ID in ( \n"
+            + "  FROM WISECAN_SMS_SEND \n"
+            + " WHERE FUSERID in ( \n"
             + "     SELECT NSID  \n"
             + "	      FROM TBL_RESTAPI_USER \n"
             + "	     WHERE AGENTID = '" + args["agentKey"] + "' \n";
@@ -38,7 +38,7 @@ module.exports = {
             + "   ) \n";
         if(typeof id !== 'undefined' && null != id) {
             sqlText = sqlText
-            + "   AND MSG_ID='" + id +"' \n";
+            + "   AND FSEQUENCE='" + id +"' \n";
         }
             sqlText = sqlText
             + ")  \n"
@@ -91,21 +91,23 @@ module.exports = {
                 + " WHERE A.AGENTID = '" + agentKey + "' \n"
                 + "   AND A.VUSERID = '" + user +"' \n";
             sqlText.push(
-                "  INSERT INTO SDK_SMS_SEND ( \n"
-                + "  MSG_ID, USER_ID, SCHEDULE_TYPE, \n"
-                + "  SUBJECT, SMS_MSG, NOW_DATE, \n"
-                + "  SEND_DATE, CALLBACK, DEST_INFO, \n"
-                + "  RESERVED7, RESERVED8, RESERVED9 \n"
+                "  INSERT INTO WISECAN_SMS_SEND ( \n"
+                + "  FSERIAL, FUSERID, SCHEDULE_TYPE, \n"
+                + "  FETC1, FTEXT, \n"
+                + "  FSENDDATE, FCALLBACK, SEND_NAME, FDESTINE, \n"
+                + "  FETC3, FETC4, FETC5 \n"
                 + ") \n"
-                + "SELECT next value for dbo.seqsmsdata \n"               // id
+                + "SELECT (SELECT ISNULL(MAX(FSEQUENCE), 0)+1 FROM WISECAN_SMS_SEND ) \n"               // id
                 + "       , A.NSID \n"
                 + "       , case when '" + req.body[idx]['chkReserve'] + "'='T' then '1' else '0' end \n"
                 + "       , '" + req.body[idx]['sTitle'] + "' \n"
                 + "       , '" + req.body[idx]['vmessage'] + "' \n"
-                + "       , CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') \n"
-                + "       , (case when '" + req.body[idx]['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body[idx]['revDttm'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) \n"
+                // "       , (case when '" + req.body[idx]['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body[idx]['revDttm'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) \n"
+                + "       , (case when '" + req.body[idx]['chkReserve'] + "'='T' then '"+req.body[idx]['revDttm']+"' else dbo.getLocalDate(DEFAULT) end ) \n"
                 + "       , '" + req.body[idx]['vsourcetel'] + "' \n"
-                + "       , '" + req.body[idx]['vreceiver'] + "^" + req.body[idx]['vdestinationtel'] + "' \n"
+                //+ "       , '" + req.body[idx]['vreceiver'] + "^" + req.body[idx]['vdestinationtel'] + "' \n"
+                + "       , '" + req.body[idx]['vreceiver'] + "' \n"
+                + "				, '" + req.body[idx]['vdestinationtel'] + "' \n"
                 + "       , next value for dbo.seqsmsheader \n"
                 + "       , (select isnull(( \n"
                 + "          select isnull(nrate,0) \n"
@@ -114,7 +116,7 @@ module.exports = {
                 + "              and tir.ckind = 'S' \n"
                 + "              and tu.nsid = A.NSID \n"
                 + "           ),0)) \n"
-                + "       , 'F' \n"
+                + "       , CONVERT(CHAR(19), dbo.getLocalDate(DEFAULT), 120) \n"
                 + "  FROM TBL_RESTAPI_USER A \n"
                 + " WHERE A.AGENTID = '" + agentKey + "' \n"
                 + "   AND A.VUSERID='" + user +"';"
@@ -200,17 +202,17 @@ module.exports = {
         if(typeof id !== 'undefined' && null != id) {
             sqlText.push(
                 "  UPDATE A SET \n"
-                + "       NOW_DATE = CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') \n"
-                + "       , SEND_DATE = (case when '" + req.body['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body['revDttm'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) \n"
+                + "       FSENDDATE = (case when '" + req.body['chkReserve'] + "'='T' then '"+req.body['revDttm']+"' else dbo.getLocalDate(DEFAULT) end ) \n"
                 + "       , SCHEDULE_TYPE = case when '" + req.body['chkReserve'] + "'='T' then '1' else '0' end \n"
-                + "       , SUBJECT = '" + req.body['sTitle'] + "' \n"
-                + "       , SMS_MSG = '" + req.body['vmessage'] + "' \n"
-                + "       , CALLBACK = '" + req.body['vsourcetel'] + "' \n"
-                + "       , DEST_INFO = '" + req.body['vreceiver'] + "^" + req.body['vdestinationtel'] + "' \n"
-                + "  FROM SDK_SMS_SEND AS A \n"
+                + "       , FETC1 = '" + req.body['sTitle'] + "' \n"
+                + "       , FTEXT = '" + req.body['vmessage'] + "' \n"
+                + "       , FCALLBACK = '" + req.body['vsourcetel'] + "' \n"
+                + "       , SEND_NAME = '" + req.body['vreceiver'] + "' \n"
+                + "				, FDESTINE = '" + req.body['vdestinationtel'] + "' \n"
+                + "  FROM WISECAN_SMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                + "    ON A.USER_ID = B.NSID \n"
-                + " WHERE A.MSG_ID = '" + id + "' \n"
+                + "    ON A.FUSERID = B.NSID \n"
+                + " WHERE A.FSEQUENCE = '" + id + "' \n"
                 + "   AND B.AGENTID = '" + agentKey + "' \n"
                 + ((null == req.body["user"]) ? "" : ("   AND B.VUSERID='" + req.body["user"] +"' \n"))
             );
@@ -219,17 +221,17 @@ module.exports = {
             var idx = 0; while(idx < req.body.length) {
                 sqlText.push(
                 "  UPDATE A SET "
-                + "       NOW_DATE = CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') "
-                + "       , SEND_DATE = (case when '" + req.body[idx]['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body[idx]['revDttm'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) "
+                + "       FSENDDATE = (case when '" + req.body[idx]['chkReserve'] + "'='T' then '"+req.body[idx]['revDttm']+"' else dbo.getLocalDate(DEFAULT) end ) \n"
                 + "       , SCHEDULE_TYPE = case when '" + req.body[idx]['chkReserve'] + "'='T' then '1' else '0' end "
-                + "       , SUBJECT = '" + req.body[idx]['sTitle'] + "' "
-                + "       , SMS_MSG = '" + req.body[idx]['vmessage'] + "' "
-                + "       , CALLBACK = '" + req.body[idx]['vsourcetel'] + "' "
-                + "       , DEST_INFO = '" + req.body[idx]['vreceiver'] + "^" + req.body[idx]['vdestinationtel'] + "' "
-                + "  FROM SDK_SMS_SEND AS A \n"
+                + "       , FETC1 = '" + req.body[idx]['sTitle'] + "' "
+                + "       , FTEXT = '" + req.body[idx]['vmessage'] + "' "
+                + "       , FCALLBACK = '" + req.body[idx]['vsourcetel'] + "' "
+                + "       , SEND_NAME = '" + req.body[idx]['vreceiver'] + "' \n"
+                + "				, FDESTINE = '" + req.body[idx]['vdestinationtel'] + "' \n"
+                + "  FROM WISECAN_SMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                + "    ON A.USER_ID = B.NSID \n"
-                + " WHERE A.MSG_ID = '" + req.body[idx]["id"] + "' \n"
+                + "    ON A.FUSERID = B.NSID \n"
+                + " WHERE A.FSEQUENCE = '" + req.body[idx]["id"] + "' \n"
                 + "   AND B.AGENTID = '" + agentKey + "' \n"
                 + ((null == req.body[idx]["user"]) ? "" : ("   AND B.VUSERID='" + req.body[idx]["user"] +"' \n"))
                 );
@@ -256,18 +258,18 @@ module.exports = {
         if(typeof id !== 'undefined' && null != id) {
             sqlText.push(
                 "  UPDATE A SET \n"
-                + "       A.NBALANCE=(A.NBALANCE + B.RESERVED8) \n"
+                + "       A.NBALANCE=(A.NBALANCE + B.FETC4) \n"
                 + "  FROM TBLUSER A \n"
-                + " INNER JOIN SDK_SMS_SEND B \n"
-                + "    ON A.NSID=B.USER_ID \n"
-                + " WHERE B.MSG_ID=" + id
+                + " INNER JOIN WISECAN_SMS_SEND B \n"
+                + "    ON A.NSID=B.FUSERID \n"
+                + " WHERE B.FSEQUENCE=" + id
             );
             sqlText.push(
                 "  DELETE A \n"
-                + "  FROM SDK_SMS_SEND AS A \n"
+                + "  FROM WISECAN_SMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                + "    ON A.USER_ID = B.NSID \n"
-                + " WHERE A.MSG_ID = '" + id + "' \n"
+                + "    ON A.FUSERID = B.NSID \n"
+                + " WHERE A.FSEQUENCE = '" + id + "' \n"
                 + "   AND B.AGENTID = '" + agentKey + "' \n"
                 + ((null == req.body["user"]) ? "" : ("   AND B.VUSERID='" + req.body["user"] +"' \n"))
             );
@@ -275,18 +277,18 @@ module.exports = {
             var idx = 0; while(idx < req.body.length) {
                 sqlText.push(
                 "  UPDATE A SET \n"
-                + "       A.NBALANCE=(A.NBALANCE + B.RESERVED8) \n"
+                + "       A.NBALANCE=(A.NBALANCE + B.FETC4) \n"
                 + "  FROM TBLUSER A \n"
-                + " INNER JOIN SDK_SMS_SEND B \n"
-                + "    ON A.NSID=B.USER_ID \n"
-                + " WHERE B.MSG_ID=" + req.body[idx]["id"]
+                + " INNER JOIN WISECAN_SMS_SEND B \n"
+                + "    ON A.NSID=B.FUSERID \n"
+                + " WHERE B.FSEQUENCE=" + req.body[idx]["id"]
                 );
                 sqlText.push(
                 "  DELETE A \n"
-                + "  FROM SDK_SMS_SEND AS A \n"
+                + "  FROM WISECAN_SMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                + "    ON A.USER_ID = B.NSID \n"
-                + " WHERE A.MSG_ID = '" + req.body[idx]["id"] + "' \n"
+                + "    ON A.FUSERID = B.NSID \n"
+                + " WHERE A.FSEQUENCE = '" + req.body[idx]["id"] + "' \n"
                 + "   AND B.AGENTID = '" + agentKey + "' \n"
                 + ((null == req.body[idx]["user"]) ? "" : ("   AND B.VUSERID='" + req.body[idx]["user"] +"' \n"))
                 );
@@ -301,24 +303,24 @@ module.exports = {
         var id = (typeof req.query !== "undefined") ? req.query["id"] : null;
         var sqlText = 
             "  WITH ORDERD_DATA AS ( \n"
-            + "    SELECT RANK() OVER(ORDER BY MSG_ID DESC) ROWID \n"
-            + "           , MSG_ID id \n"
-            + "           , USER_ID ntblusersid \n"
-            + "           , JOB_ID \n"
+            + "    SELECT RANK() OVER(ORDER BY FSEQUENCE DESC) ROWID \n"
+            + "           , FSEQUENCE id \n"
+            + "           , FUSERID ntblusersid \n"
+            + "           , 0 JOB_ID \n"
             + "           , CASE SCHEDULE_TYPE WHEN 1 THEN 'T' ELSE 'F' END chkReserve \n"
-            + "           , SUBJECT sTitle \n"
-            + "           , SMS_MSG vmessage \n"
-            + "           , SEND_DATE revDttm \n"
-            + "           , CALLBACK vsourcetel \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), 0, CHARINDEX('^', DEST_INFO)) vreceiver \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), CHARINDEX('^', DEST_INFO) + 1, LEN(CONVERT(VARCHAR(80),DEST_INFO)) - CHARINDEX('^', DEST_INFO)) vdestinationtel \n"
-            + "           , RESERVED8 msgRate \n"
-            + "           , SUCC_COUNT \n"
-            + "           , FAIL_COUNT \n"
+            + "           , FETC1 sTitle \n"
+            + "           , FTEXT vmessage \n"
+            + "           , FSENDDATE revDttm \n"
+            + "           , FCALLBACK vsourcetel \n"
+            + "           , SEND_NAME vreceiver \n"
+            + "           , FDESTINE vdestinationtel \n"
+            + "           , CASE WHEN FSENDSTAT = 2 AND FRSLTSTAT = '06' THEN CONVERT(decimal(11), FETC4, 0) ELSE 0 END msgRate \n"
+            + "           , CASE WHEN FSENDSTAT = 2 AND FRSLTSTAT = '06' THEN 1 ELSE 0 END SUCC_COUNT \n"
+            + "           , CASE WHEN FSENDSTAT = 2 AND FRSLTSTAT = '06' THEN 0 ELSE 1 END FAIL_COUNT \n"
             + "           , " + args["currentPage"] + " CURRENT_PAGE \n"
             + "           , COUNT(*) OVER() TOTAL_COUNT \n"     
-            + "      FROM SDK_SMS_REPORT \n"
-            + "     WHERE USER_ID in ( \n"
+            + "      FROM WISECAN_SMS_REPORT \n"
+            + "     WHERE FUSERID in ( \n"
             + "         SELECT CAST(NSID AS VARCHAR)  \n"
             + "	          FROM TBL_RESTAPI_USER \n"
             + "	         WHERE AGENTID = '" + args["agentKey"] + "' \n";
@@ -330,7 +332,7 @@ module.exports = {
             + "       ) \n";
         if(typeof id !== 'undefined' && null != id) {
             sqlText = sqlText
-            + "   AND MSG_ID='" + id +"' \n";
+            + "   AND FSEQUENCE='" + id +"' \n";
         }
             sqlText = sqlText
             + ")  \n"
@@ -399,17 +401,17 @@ module.exports = {
                     }
                     
                     var sqlQuery = 
-                        "  SELECT SEND_DATE revDttm \n"
-                        + "       , DEST_NAME \n"
-                        + "       , PHONE_NUMBER \n"
-                        + "       , RESULT \n"
-                        + "       , TCS_RESULT \n"
-                        + "       , FEE \n"
-                        + "       , DELIVER_DATE \n"
-                        + "       , TELCOINFO \n"
-                        + "       , STATUS_TEXT \n"
-                        + "  FROM SDK_SMS_REPORT_DETAIL \n"
-                        + " WHERE MSG_ID=" + row.id
+                        "  SELECT FSENDDATE revDttm \n"
+                        + "       , SEND_NAME DEST_NAME \n"
+                        + "       , FDESTINE PHONE_NUMBER \n"
+                        + "       , FSENDSTAT RESULT \n"
+                        + "       , CASE WHEN FRSLTSTAT = '06' THEN '0' ELSE FRSLTSTAT END TCS_RESULT \n"
+                        + "       , CASE WHEN FSENDSTAT = 2 AND FRSLTSTAT = '06' THEN CONVERT(decimal(11), FETC4, 0) ELSE 0 END FEE \n"
+                        + "       , FRSLTDATE DELIVER_DATE \n"
+                        + "       , FMOBILECOMP TELCOINFO \n"
+                        + "       , '' STATUS_TEXT \n"
+                        + "  FROM WISECAN_SMS_REPORT \n"
+                        + " WHERE FSEQUENCE =" + row.id
                     ;
                     request.query(sqlQuery, (err, result) => {
                         if(typeof err !== 'undefined' && null != err) {

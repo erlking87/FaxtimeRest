@@ -223,21 +223,20 @@ module.exports = {
         var sqlText = [];
         var idx = 0; while(idx < req.body.length) {
             sqlText.push(
-                "  INSERT INTO SDK_SMS_SEND ( "
-                + "  MSG_ID, USER_ID, SCHEDULE_TYPE, "
-                + "  SUBJECT, SMS_MSG, NOW_DATE, "
-                + "  SEND_DATE, CALLBACK, DEST_INFO, "
-                + "  RESERVED7, RESERVED8, RESERVED9 "
+                "  INSERT INTO WISECAN_SMS_SEND ( "
+                + "  FSERIAL, FUSERID, SCHEDULE_TYPE, "
+                + "  FETC1, FTEXT, "
+                + "  FSENDDATE, FCALLBACK, SEND_NAME, FDESTINE "
+                + "  FETC3, FETC4, FETC5"
                 + ") VALUES ( "
-                + "  next value for dbo.seqsmsdata "               // id
+                + "  (SELECT ISNULL(MAX(FSEQUENCE), 0)+1 FROM WISECAN_SMS_SEND ) "               // id
                 + "  , '" + req.body[idx]['ntblusersid'] + "'"
                 + "  , '0' "
                 + "  , '" + req.body[idx]['sTitle'] + "' "
                 + "  , '" + req.body[idx]['vmessage'] + "' "
-                + "  , CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') "
-                + "  , CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') "
+                + "  , dbo.getLocalDate(DEFAULT) "
                 + "  , '07044719788'"
-                + "  , 'faxwide^" + req.body[idx]['vdestinationtel'] + "'"
+                + "  , 'faxwide', '" + req.body[idx]['vdestinationtel'] + "'"
                 + "  , next value for dbo.seqsmsheader "
                 + "  , (select isnull(( "
                 + "     select isnull(nrate,0) "
@@ -246,7 +245,7 @@ module.exports = {
                 + "         and tir.ckind = 'S' "
                 + "         and tu.nsid = '" + req.body[idx]['ntblusersid'] + "'"
                 + "      ),0)) "
-                + "  , 'F' "
+                + "  , CONVERT(CHAR(19), dbo.getLocalDate(DEFAULT), 120) "
                 + "  ) ;"
             );
             ++idx
@@ -270,29 +269,29 @@ module.exports = {
         // id가 있으면 본문은 단건에 대한 오브젝트이다.
         if(typeof id !== 'undefined' && null != id) {
             sqlText.push(
-                "  UPDATE SDK_SMS_SEND SET "
-                + "  NOW_DATE = CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') "
-                + "  , SEND_DATE = (case when '" + req.body['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body['chkReserve'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) "
+                "  UPDATE WISECAN_SMS_SEND SET "
+                + "  FSENDDATE = (case when '" + req.body['chkReserve'] + "'='T' then '" + req.body['chkReserve'] + "' else dbo.getLocalDate(DEFAULT) end ) "
                 + "  , SCHEDULE_TYPE = case when '" + req.body['chkReserve'] + "'='T' then '1' else '0' end "
-                + "  , SUBJECT = '" + req.body['sTitle'] + "' "
-                + "  , SMS_MSG = '" + req.body['vmessage'] + "' "
-                + "  , CALLBACK = '" + req.body['vsourcetel'] + "' "
-                + "  , DEST_INFO = '" + req.body['vreceiver'] + "^" + req.body['vdestinationtel'] + "' "
-                + " WHERE MSG_ID = '" + id + "'"
+                + "  , FETC1 = '" + req.body['sTitle'] + "' "
+                + "  , FTEXT = '" + req.body['vmessage'] + "' "
+                + "  , FCALLBACK = '" + req.body['vsourcetel'] + "' "
+                + "  , SEND_NAME = '" + req.body['vreceiver'] + "' "
+                + "	 , FDESTINE = '" + req.body['vdestinationtel'] + "' "
+                + " WHERE FSEQUENCE = '" + id + "'"
             );
         // 단건이 아니면 여러건이다.
         } else {
             var idx = 0; while(idx < req.body.length) {
                 sqlText.push(
-                    "  UPDATE SDK_SMS_SEND SET "
-                + "  NOW_DATE = CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') "
-                + "  , SEND_DATE = (case when '" + req.body[idx]['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body[idx]['chkReserve'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) "
+                    "  UPDATE WISECAN_SMS_SEND SET "
+                + "  FSENDDATE = (case when '" + req.body[idx]['chkReserve'] + "'='T' then '" + req.body[idx]['chkReserve'] + "' else dbo.getLocalDate(DEFAULT) end ) "
                 + "  , SCHEDULE_TYPE = case when '" + req.body[idx]['chkReserve'] + "'='T' then '1' else '0' end "
-                + "  , SUBJECT = '" + req.body[idx]['sTitle'] + "' "
-                + "  , SMS_MSG = '" + req.body[idx]['vmessage'] + "' "
-                + "  , CALLBACK = '" + req.body[idx]['vsourcetel'] + "' "
-                + "  , DEST_INFO = '" + req.body[idx]['vreceiver'] + "^" + req.body[idx]['vdestinationtel'] + "' "
-                + " WHERE MSG_ID = '" + req.body[idx]["id"] + "';"
+                + "  , FETC1 = '" + req.body[idx]['sTitle'] + "' "
+                + "  , FTEXT = '" + req.body[idx]['vmessage'] + "' "
+                + "  , FCALLBACK = '" + req.body[idx]['vsourcetel'] + "' "
+                + "  , SEND_NAME = '" + req.body[idx]['vreceiver'] + "' "
+                + "	 , FDESTINE = '" + req.body[idx]['vdestinationtel'] + "' "
+                + " WHERE FSEQUENCE = '" + req.body[idx]["id"] + "';"
                 );
                 ++idx
             }
@@ -316,14 +315,14 @@ module.exports = {
         // id가 있으면 본문은 단건에 대한 오브젝트이다.
         if(typeof id !== 'undefined' && null != id) {
             sqlText.push(
-                "  DELETE FROM SDK_SMS_SEND "
-                + " WHERE MSG_ID = '" + id + "'"
+                "  DELETE FROM WISECAN_SMS_SEND "
+                + " WHERE FSEQUENCE = '" + id + "'"
             );
         } else {
             var idx = 0; while(idx < req.body.length) {
                 sqlText.push(
-                "  DELETE FROM SDK_SMS_SEND "
-                + " WHERE MSG_ID = '" + req.body[idx]["id"] + "';"
+                "  DELETE FROM WISECAN_SMS_SEND "
+                + " WHERE FSEQUENCE = '" + req.body[idx]["id"] + "';"
                 );
                 ++idx
             }
@@ -336,26 +335,26 @@ module.exports = {
         var id = (typeof req.query !== "undefined") ? req.query["id"] : null;
         var sqlText = 
             "  WITH ORDERD_DATA AS ( \n"
-            + "    SELECT RANK() OVER(ORDER BY MSG_ID DESC) ROWID \n"
-            + "           , MSG_ID id \n"
-            + "           , USER_ID ntblusersid \n"
-            + "           , JOB_ID \n"
+            + "    SELECT RANK() OVER(ORDER BY MSGKEY DESC) ROWID \n"
+            + "           , MSGKEY id \n"
+            + "           , ID ntblusersid \n"
+            + "           , 0 JOB_ID \n"
             + "           , CASE SCHEDULE_TYPE WHEN 1 THEN 'T' ELSE 'F' END chkReserve \n"
             + "           , SUBJECT sTitle \n"
-            + "           , MMS_MSG vmessage \n"
-            + "           , SEND_DATE revDttm \n"
+            + "           , MSG vmessage \n"
+            + "           , REQDATE revDttm \n"
             + "           , CALLBACK vsourcetel \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR,DEST_INFO), 0, CHARINDEX('^', DEST_INFO)) vreceiver \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR,DEST_INFO), CHARINDEX('^', DEST_INFO) + 1, LEN(CONVERT(VARCHAR,DEST_INFO)) - CHARINDEX('^', DEST_INFO)) vdestinationtel \n"
-            + "           , CONTENT_COUNT file_cnt \n"
-            + "           , CONTENT_DATA file_path \n"
-            + "           , RESERVED8 msgRate \n"
-            + "           , SUCC_COUNT \n"
-            + "           , FAIL_COUNT \n"
+            + "           , SEND_NAME vreceiver \n"
+            + "           , PHONE vdestinationtel \n"
+            + "           , FILE_CNT file_cnt \n"
+            + "           , FILE_PATH1 file_path \n"
+            + "           , CASE WHEN STATUS = 3 AND RSLT = '1000' THEN CONVERT(decimal(11), ETC3, 0) ELSE 0 END msgRate \n"
+            + "           , CASE WHEN STATUS = 3 AND RSLT = 1000 THEN 1 ELSE 0 END SUCC_COUNT \n"
+            + "           , CASE WHEN STATUS = 3 AND RSLT = 1000 THEN 0 ELSE 1 END FAIL_COUNT \n"
             + "           , " + args["currentPage"] + " CURRENT_PAGE \n"
             + "           , COUNT(*) OVER() TOTAL_COUNT \n"     
-            + "      FROM SDK_MMS_REPORT \n"
-            + "     WHERE USER_ID in ( \n"
+            + "      FROM WISECAN_MMS_REPORT \n"
+            + "     WHERE ID in ( \n"
             + "         SELECT NSID  \n"
             + "	          FROM TBL_RESTAPI_USER \n"
             + "	         WHERE AGENTID = '" + args["agentKey"] + "' \n";
@@ -367,7 +366,7 @@ module.exports = {
             + "       ) \n";
         if(typeof id !== 'undefined' && null != id) {
             sqlText = sqlText
-            + "   AND MSG_ID='" + id +"' \n";
+            + "   AND MSGKEY='" + id +"' \n";
         }
             sqlText = sqlText
             + ")  \n"
@@ -430,18 +429,18 @@ module.exports = {
                 } else {
                     var row = (datas instanceof Array) ? datas[i] : datas;
                     var sqlQuery = 
-                        "  SELECT SEND_DATE revDttm \n"
-                        + "       , DEST_NAME \n"
-                        + "       , PHONE_NUMBER \n"
-                        + "       , RESULT \n"
-                        + "       , TCS_RESULT \n"
-                        + "       , FEE \n"
-                        + "       , DELIVER_DATE \n"
-                        + "       , MOBILE_INFO \n"
-                        + "       , STATUS_TEXT \n"
-                        + "       , READ_TIME \n"
-                        + "  FROM SDK_MMS_REPORT_DETAIL "
-                        + " WHERE MSG_ID=" + row.id
+                        "  SELECT REQDATE revDttm \n"
+                        + "       , SEND_NAME DEST_NAME \n"
+                        + "       , PHONE PHONE_NUMBER \n"
+                        + "       , STATUS RESULT \n"
+                        + "       , RSLT TCS_RESULT \n"
+                        + "       , CASE WHEN STATUS = 3 AND RSLT = '1000' THEN CONVERT(decimal(11), ETC3, 0) ELSE 0 END FEE \n"
+                        + "       , REPORTDATE DELIVER_DATE \n"
+                        + "       , TELCOINFO MOBILE_INFO \n"
+                        + "       , '' STATUS_TEXT \n"
+                        + "       , '' READ_TIME \n"
+                        + "  FROM WISECAN_MMS_REPORT "
+                        + " WHERE MSGKEY=" + row.id
                     ;
                     request.query(sqlQuery, (err, result) => {
                         if(typeof err !== 'undefined' && null != err) {

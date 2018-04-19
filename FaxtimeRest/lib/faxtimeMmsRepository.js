@@ -11,23 +11,25 @@ module.exports = {
         var args = dbHelper.sqlSelectParameters(req);
         var sqlText =
             "  WITH ORDERD_DATA AS ( \n"
-            + "    SELECT RANK() OVER(ORDER BY MSG_ID DESC) ROWID \n"
-            + "           , MSG_ID id \n"
-            + "           , USER_ID ntblusersid \n"
+            + "    SELECT RANK() OVER(ORDER BY MSGKEY DESC) ROWID \n"
+            + "           , MSGKEY id \n"
+            + "           , ID ntblusersid \n"
             + "           , CASE SCHEDULE_TYPE WHEN 1 THEN 'T' ELSE 'F' END chkReserve \n"
             + "           , SUBJECT sTitle \n"
-            + "           , MMS_MSG vmessage \n"
-            + "           , SEND_DATE revDttm \n"
+            + "           , MSG vmessage \n"
+            + "           , REQDATE revDttm \n"
             + "           , CALLBACK vsourcetel \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), 0, CHARINDEX('^', DEST_INFO)) vreceiver \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), CHARINDEX('^', DEST_INFO) + 1, LEN(CONVERT(VARCHAR(80),DEST_INFO)) - CHARINDEX('^', DEST_INFO)) vdestinationtel \n"
-            + "           , CONTENT_COUNT file_cnt \n"
-            + "           , CONTENT_DATA file_path \n"
-            + "           , RESERVED8 msgRate \n"
+            + "           , SEND_NAME vreceiver \n"
+            + "           , PHONE vdestinationtel \n"
+            + "           , FILE_CNT file_cnt \n"
+            + "           , FILE_PATH1 file_path1 \n"
+            + "           , FILE_PATH2 file_path2 \n"
+            + "           , FILE_PATH3 file_path3 \n"
+            + "           , CASE WHEN STATUS = 3 AND RSLT = '1000' THEN CONVERT(decimal(11), ETC3, 0) ELSE 0 END msgRate \n"
             + "           , " + args["currentPage"] + " CURRENT_PAGE \n"
             + "           , COUNT(*) OVER() TOTAL_COUNT \n"
-            + "  FROM SDK_MMS_SEND \n"
-            + " WHERE USER_ID in ( \n"
+            + "  FROM WISECAN_MMS_SEND \n"
+            + " WHERE ID in ( \n"
             + "     SELECT CAST(NSID AS VARCHAR)  \n"
             + "	      FROM TBL_RESTAPI_USER \n"
             + "	     WHERE AGENTID = '" + args["agentKey"] + "' \n";
@@ -39,7 +41,7 @@ module.exports = {
             + "   ) \n";
         if (typeof id !== 'undefined' && null != id) {
             sqlText = sqlText
-                + "   AND MSG_ID='" + id + "' \n";
+                + "   AND MSGKEY='" + id + "' \n";
         }
         sqlText = sqlText
             + ")  \n"
@@ -54,7 +56,9 @@ module.exports = {
             + "       ,A.vreceiver \n"
             + "       ,A.vdestinationtel \n"
             + "       ,A.file_cnt \n"
-            + "       ,A.file_path \n"
+            + "       ,A.file_path1 \n"
+            + "       ,A.file_path2 \n"
+            + "       ,A.file_path3 \n"
             + "       ,A.msgRate \n"
             + "       ,A.CURRENT_PAGE currentPage \n"
             + "       ,A.TOTAL_COUNT totalCount \n"
@@ -95,26 +99,26 @@ module.exports = {
                 + " WHERE A.AGENTID = '" + agentKey + "' \n"
                 + "   AND A.VUSERID = '" + user + "' \n";
             sqlText.push(
-                "  INSERT INTO SDK_MMS_SEND ( \n"
-                + "  MSG_ID, USER_ID, SCHEDULE_TYPE, \n"
-                + "  SUBJECT, NOW_DATE, SEND_DATE, CALLBACK, \n"
-                + "  DEST_COUNT, DEST_INFO, MSG_TYPE, MMS_MSG, \n"
-                + "  CONTENT_COUNT, CONTENT_DATA, \n"
-                + "  RESERVED7, RESERVED8, RESERVED9 \n"
+                "  INSERT INTO WISECAN_MMS_SEND ( \n"
+                + "  MSGKEY, ID, SCHEDULE_TYPE, \n"
+                + "  SUBJECT, REQDATE, CALLBACK, \n"
+                + "  SEND_NAME, PHONE, MSG, \n"
+                + "  FILE_CNT, FILE_PATH1, FILE_PATH2, FILE_PATH3, \n"
+                + "  ETC2, ETC3, ETC4 \n"
                 + ") \n"
                 + "SELECT next value for dbo.mms_msg_seq \n"               // id
                 + "  , A.NSID \n"
                 + "  , case when '" + req.body[idx]['chkReserve'] + "'='T' then '1' else '0' end \n"
                 + "  , '" + req.body[idx]['sTitle'] + "' \n"
-                + "  , CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') \n"
-                + "  , (case when '" + req.body[idx]['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body[idx]['revDttm'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) \n"
+                + "  , (case when '" + req.body[idx]['chkReserve'] + "'='T' then '" + req.body[idx]['revDttm'] + "' else dbo.getLocalDate(DEFAULT) end ) \n"
                 + "  , '" + req.body[idx]['vsourcetel'] + "' \n"
-                + "  , 1 \n"
-                + "  , '" + req.body[idx]['vreceiver'] + "^" + req.body[idx]['vdestinationtel'] + "' \n"
-                + "  , 0 \n"
+                + "  , '" + req.body[idx]['vreceiver'] + "' \n"
+                + "  , '" + req.body[idx]['vdestinationtel'] + "' \n"
                 + "  , '" + req.body[idx]['vmessage'] + "' \n"
                 + "  , " + req.body[idx]['file_cnt'] + " \n"
-                + "  , '" + req.body[idx]['file_path'] + "' \n"
+                + "  , REPLACE('" + req.body[idx]['file_path1'] + "', 'C:/uploadfile/mmsfile','C:\\uploadfile\\mmsfile') \n"
+                + "  , REPLACE('" + req.body[idx]['file_path2'] + "', 'C:/uploadfile/mmsfile','C:\\uploadfile\\mmsfile') \n"
+                + "  , REPLACE('" + req.body[idx]['file_path3'] + "', 'C:/uploadfile/mmsfile','C:\\uploadfile\\mmsfile') \n"
                 + "  , next value for dbo.seqmmsheader \n"
                 + "  , (select isnull(( \n"
                 + "     select isnull(nrate,0) \n"
@@ -123,7 +127,7 @@ module.exports = {
                 + "         and tir.ckind = CASE WHEN 0 < " + req.body[idx]['file_cnt'] + " THEN 'M' ELSE 'L' END \n"
                 + "         and tu.nsid = A.NSID \n"
                 + "      ),0)) \n"
-                + "  , 'F' \n"
+                + "  , CONVERT(CHAR(19), dbo.getLocalDate(DEFAULT), 120) \n"
                 + "  FROM TBL_RESTAPI_USER A \n"
                 + " WHERE A.AGENTID = '" + agentKey + "' \n"
                 + "   AND A.VUSERID='" + user + "';"
@@ -207,19 +211,21 @@ module.exports = {
         if (typeof id !== 'undefined' && null != id) {
             sqlText.push(
                 "  UPDATE A SET \n"
-                + "       NOW_DATE = CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') \n"
-                + "       , SEND_DATE = (case when '" + req.body['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body['chkReserve'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) \n"
-                + "       , SCHEDULE_TYPE = case when '" + req.body['revDttm'] + "'='T' then '1' else '0' end \n"
+                + "       REQDATE = (case when '" + req.body['chkReserve'] + "'='T' then '" + req.body['revDttm'] + "' else dbo.getLocalDate(DEFAULT) end ) \n"
+                + "       , SCHEDULE_TYPE = case when '" + req.body['chkReserve'] + "'='T' then '1' else '0' end \n"
                 + "       , SUBJECT = '" + req.body['sTitle'] + "' \n"
-                + "       , MMS_MSG = '" + req.body['vmessage'] + "' \n"
-                + "       , CONTENT_COUNT = '" + req.body['file_cnt'] + "' \n"
-                + "       , CONTENT_DATA = '" + req.body['file_path'] + "' \n"
+                + "       , MSG = '" + req.body['vmessage'] + "' \n"
+                + "       , FILE_CNT = " + req.body['file_cnt'] + " \n"
+                + "       , FILE_PATH1 = '" + req.body['file_path1'] + "' \n"
+                + "       , FILE_PATH2 = '" + req.body['file_path2'] + "' \n"
+                + "       , FILE_PATH3 = '" + req.body['file_path3'] + "' \n"
                 + "       , CALLBACK = '" + req.body['vsourcetel'] + "' \n"
-                + "       , DEST_INFO = '" + req.body['vreceiver'] + "^" + req.body['vdestinationtel'] + "' \n"
-                + "  FROM SDK_MMS_SEND AS A \n"
+                + "       , SEND_NAME = '" + req.body['vreceiver'] + "' \n"
+                + "       , PHONE = '" + req.body['vdestinationtel'] + "' \n"
+                + "  FROM WISECAN_MMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                + "    ON A.USER_ID = B.NSID \n"
-                + " WHERE A.MSG_ID = '" + id + "' \n"
+                + "    ON A.ID = B.NSID \n"
+                + " WHERE A.MSGKEY = '" + id + "' \n"
                 + "   AND B.AGENTID = '" + agentKey + "' \n"
                 + ((null == req.body["user"]) ? "" : ("   AND B.VUSERID='" + req.body["user"] + "' \n"))
             );
@@ -228,19 +234,21 @@ module.exports = {
             var idx = 0; while (idx < req.body.length) {
                 sqlText.push(
                     "  UPDATE A SET \n"
-                    + "       NOW_DATE = CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') \n"
-                    + "       , SEND_DATE = (case when '" + req.body[idx]['chkReserve'] + "'='T' then REPLACE(REPLACE(REPLACE('" + req.body[idx]['revDttm'] + "','-',''), ' ',''),':','') else CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 112) + REPLACE(CONVERT(CHAR(8), dbo.getLocalDate(DEFAULT), 108), ':', '') end ) \n"
+                    + "       REQDATE = (case when '" + req.body[idx]['chkReserve'] + "'='T' then '" + req.body[idx]['revDttm'] + "' else dbo.getLocalDate(DEFAULT) end ) \n"
                     + "       , SCHEDULE_TYPE = case when '" + req.body[idx]['chkReserve'] + "'='T' then '1' else '0' end \n"
                     + "       , SUBJECT = '" + req.body[idx]['sTitle'] + "' \n"
-                    + "       , MMS_MSG = '" + req.body[idx]['vmessage'] + "' \n"
-                    + "       , CONTENT_COUNT = '" + req.body[idx]['file_cnt'] + "' \n"
-                    + "       , CONTENT_DATA = '" + req.body[idx]['file_path'] + "' \n"
+                    + "       , MSG = '" + req.body[idx]['vmessage'] + "' \n"
+                    + "       , FILE_CNT = '" + req.body[idx]['file_cnt'] + "' \n"
+                    + "       , FILE_PATH1 = '" + req.body[idx]['file_path1'] + "' \n"
+                    + "       , FILE_PATH2 = '" + req.body[idx]['file_path2'] + "' \n"
+                    + "       , FILE_PATH3 = '" + req.body[idx]['file_path3'] + "' \n"
                     + "       , CALLBACK = '" + req.body[idx]['vsourcetel'] + "' \n"
-                    + "       , DEST_INFO = '" + req.body[idx]['vreceiver'] + "^" + req.body[idx]['vdestinationtel'] + "' \n"
-                    + "  FROM SDK_MMS_SEND AS A \n"
+                    + "       , SEND_NAME = '" + req.body[idx]['vreceiver'] + "' \n"
+                    + "       , PHONE = '" + req.body[idx]['vdestinationtel'] + "' \n"
+                    + "  FROM WISECAN_MMS_SEND AS A \n"
                     + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                    + "    ON A.USER_ID = B.NSID \n"
-                    + " WHERE A.MSG_ID = '" + req.body[idx]["id"] + "' \n"
+                    + "    ON A.ID = B.NSID \n"
+                    + " WHERE A.MSGKEY = '" + req.body[idx]["id"] + "' \n"
                     + "   AND B.AGENTID = '" + agentKey + "' \n"
                     + ((null == req.body[idx]["user"]) ? "" : ("   AND B.VUSERID='" + req.body[idx]["user"] + "' \n"))
                 );
@@ -267,18 +275,18 @@ module.exports = {
         if (typeof id !== 'undefined' && null != id) {
             sqlText.push(
                 "  UPDATE A SET \n"
-                + "       A.NBALANCE=(A.NBALANCE + B.RESERVED8) \n"
+                + "       A.NBALANCE=(A.NBALANCE + B.ETC3) \n"
                 + "  FROM TBLUSER A \n"
-                + " INNER JOIN SDK_MMS_SEND B \n"
-                + "    ON A.NSID=B.USER_ID \n"
-                + " WHERE B.MSG_ID=" + id
+                + " INNER JOIN WISECAN_MMS_SEND B \n"
+                + "    ON A.NSID=B.ID \n"
+                + " WHERE B.MSGKEY=" + id
             );
             sqlText.push(
                 "  DELETE A \n"
-                + "  FROM SDK_MMS_SEND AS A \n"
+                + "  FROM WISECAN_MMS_SEND AS A \n"
                 + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                + "    ON A.USER_ID = B.NSID \n"
-                + " WHERE A.MSG_ID = '" + id + "' \n"
+                + "    ON A.ID = B.NSID \n"
+                + " WHERE A.MSGKEY = '" + id + "' \n"
                 + "   AND B.AGENTID = '" + agentKey + "' \n"
                 + ((null == req.body["user"]) ? "" : ("   AND B.VUSERID='" + req.body["user"] + "' \n"))
             );
@@ -286,18 +294,18 @@ module.exports = {
             var idx = 0; while (idx < req.body.length) {
                 sqlText.push(
                     "  UPDATE A SET \n"
-                    + "       A.NBALANCE=(A.NBALANCE + B.RESERVED8) \n"
+                    + "       A.NBALANCE=(A.NBALANCE + B.ETC3) \n"
                     + "  FROM TBLUSER A \n"
-                    + " INNER JOIN SDK_MMS_SEND B \n"
-                    + "    ON A.NSID=B.USER_ID \n"
-                    + " WHERE B.MSG_ID=" + req.body[idx]["id"]
+                    + " INNER JOIN WISECAN_MMS_SEND B \n"
+                    + "    ON A.NSID=B.ID \n"
+                    + " WHERE B.MSGKEY=" + req.body[idx]["id"]
                 );
                 sqlText.push(
                     "  DELETE A \n"
-                    + "  FROM SDK_MMS_SEND A \n"
+                    + "  FROM WISECAN_MMS_SEND A \n"
                     + " INNER JOIN TBL_RESTAPI_USER AS B \n"
-                    + "    ON A.USER_ID = B.NSID \n"
-                    + " WHERE A.MSG_ID = '" + req.body[idx]["id"] + "' \n"
+                    + "    ON A.ID = B.NSID \n"
+                    + " WHERE A.MSGKEY = '" + req.body[idx]["id"] + "' \n"
                     + "   AND B.AGENTID = '" + agentKey + "' \n"
                     + ((null == req.body[idx]["user"]) ? "" : ("   AND B.VUSERID='" + req.body[idx]["user"] + "' \n"))
                 );
@@ -311,26 +319,28 @@ module.exports = {
         var id = (typeof req.query !== "undefined") ? req.query["id"] : null;
         var sqlText =
             "  WITH ORDERD_DATA AS ( \n"
-            + "    SELECT RANK() OVER(ORDER BY MSG_ID DESC) ROWID \n"
-            + "           , MSG_ID id \n"
-            + "           , USER_ID ntblusersid \n"
-            + "           , JOB_ID \n"
+            + "    SELECT RANK() OVER(ORDER BY MSGKEY DESC) ROWID \n"
+            + "           , MSGKEY id \n"
+            + "           , ID ntblusersid \n"
+            + "           , 0 JOB_ID \n"
             + "           , CASE SCHEDULE_TYPE WHEN 1 THEN 'T' ELSE 'F' END chkReserve \n"
             + "           , SUBJECT sTitle \n"
-            + "           , MMS_MSG vmessage \n"
-            + "           , SEND_DATE revDttm \n"
+            + "           , MSG vmessage \n"
+            + "           , REQDATE revDttm \n"
             + "           , CALLBACK vsourcetel \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), 0, CHARINDEX('^', DEST_INFO)) vreceiver \n"
-            + "           , SUBSTRING(CONVERT(VARCHAR(80),DEST_INFO), CHARINDEX('^', DEST_INFO) + 1, LEN(CONVERT(VARCHAR(80),DEST_INFO)) - CHARINDEX('^', DEST_INFO)) vdestinationtel \n"
-            + "           , CONTENT_COUNT file_cnt \n"
-            + "           , CONTENT_DATA file_path \n"
-            + "           , RESERVED8 msgRate \n"
-            + "           , SUCC_COUNT \n"
-            + "           , FAIL_COUNT \n"
+            + "           , SEND_NAME vreceiver \n"
+            + "           , PHONE vdestinationtel \n"
+            + "           , FILE_CNT file_cnt \n"
+            + "           , FILE_PATH1 file_path1 \n"
+            + "           , FILE_PATH2 file_path2 \n"
+            + "           , FILE_PATH3 file_path3 \n"
+            + "           , ETC3 msgRate \n"
+            + "           , CASE WHEN STATUS = 3 AND RSLT = '1000' THEN 1 ELSE 0 END SUCC_COUNT \n"
+            + "           , CASE WHEN STATUS = 3 AND RSLT = '1000' THEN 0 ELSE 1 END FAIL_COUNT \n"
             + "           , " + args["currentPage"] + " CURRENT_PAGE \n"
             + "           , COUNT(*) OVER() TOTAL_COUNT \n"
-            + "      FROM SDK_MMS_REPORT \n"
-            + "     WHERE USER_ID in ( \n"
+            + "      FROM WISECAN_MMS_REPORT \n"
+            + "     WHERE ID in ( \n"
             + "         SELECT CAST(NSID AS VARCHAR)  \n"
             + "	          FROM TBL_RESTAPI_USER \n"
             + "	         WHERE AGENTID = '" + args["agentKey"] + "' \n";
@@ -342,7 +352,7 @@ module.exports = {
             + "       ) \n";
         if (typeof id !== 'undefined' && null != id) {
             sqlText = sqlText
-                + "   AND MSG_ID='" + id + "' \n";
+                + "   AND MSGKEY='" + id + "' \n";
         }
         sqlText = sqlText
             + ")  \n"
@@ -360,7 +370,9 @@ module.exports = {
             + "	      ,A.SUCC_COUNT succCount "
             + "	      ,A.FAIL_COUNT FailCount "
             + "       ,A.file_cnt \n"
-            + "       ,A.file_path \n"
+            + "       ,A.file_path1 \n"
+            + "       ,A.file_path2 \n"
+            + "       ,A.file_path3 \n"
             + "       ,A.CURRENT_PAGE currentPage \n"
             + "       ,A.TOTAL_COUNT totalCount \n"
             + "       , ((TOTAL_COUNT / " + args["pageSize"] + ") + \n"
@@ -411,18 +423,18 @@ module.exports = {
                         return;
                     }
                     var sqlQuery =
-                        "  SELECT SEND_DATE revDttm \n"
-                        + "       , DEST_NAME \n"
-                        + "       , PHONE_NUMBER \n"
-                        + "       , RESULT \n"
-                        + "       , TCS_RESULT \n"
-                        + "       , FEE \n"
-                        + "       , DELIVER_DATE \n"
-                        + "       , MOBILE_INFO \n"
-                        + "       , STATUS_TEXT \n"
-                        + "       , READ_TIME \n"
-                        + "  FROM SDK_MMS_REPORT_DETAIL "
-                        + " WHERE MSG_ID=" + row.id
+                        "  SELECT REQDATE revDttm \n"
+                        + "       , SEND_NAME DEST_NAME \n"
+                        + "       , PHONE PHONE_NUMBER \n"
+                        + "       , STATUS RESULT \n"
+                        + "       , RSLT TCS_RESULT \n"
+                        + "       , ETC3 FEE \n"
+                        + "       , RSLTDATE DELIVER_DATE \n"
+                        + "       , TELCOINFO MOBILE_INFO \n"
+                        + "       , '' STATUS_TEXT \n"
+                        + "       , '' READ_TIME \n"
+                        + "  FROM WISECAN_MMS_REPORT "
+                        + " WHERE MSGKEY=" + row.id
                         ;
                     request.query(sqlQuery, (err, result) => {
                         if (typeof err !== 'undefined' && null != err) {
