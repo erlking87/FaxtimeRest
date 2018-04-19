@@ -1378,7 +1378,13 @@
           "type": "integer",
           "format": "int32"
         },
-        "file_path": {
+        "file_path1": {
+          "type": "string"
+        },
+        "file_path2": {
+          "type": "string"
+        },
+        "file_path3": {
           "type": "string"
         }
       }
@@ -1417,7 +1423,13 @@
           "type": "integer",
           "format": "int32"
         },
-        "file_path": {
+        "file_path1": {
+          "type": "string"
+        },
+        "file_path2": {
+          "type": "string"
+        },
+        "file_path3": {
           "type": "string"
         }
       }
